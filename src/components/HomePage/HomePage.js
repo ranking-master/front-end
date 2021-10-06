@@ -12,6 +12,7 @@ import EmptyState from "../EmptyState";
 
 import { ReactComponent as CabinIllustration } from "../../illustrations/cabin.svg";
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
+import GroupList from "../GroupList/GroupList";
 
 class HomePage extends Component {
   signInWithEmailLink = () => {
@@ -74,11 +75,15 @@ class HomePage extends Component {
 
     if (user) {
       return (
-        <EmptyState
-          image={<CabinIllustration />}
-          title="Home"
-          description="This is the home page. You can edit it from HomePage.js."
-        />
+        <div>
+          <GroupList />
+        </div>
+        // <EmptyState
+        //   image={<CabinIllustration />}
+        //   title="Home"
+        //   description="This is the home page. You can edit it from HomePage.js."
+        // />
+        // <groupList/>
       );
     }
 

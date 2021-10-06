@@ -8,14 +8,15 @@ import HomePage from "../HomePage";
 import AdminPage from "../AdminPage";
 import UserPage from "../UserPage";
 import NotFoundPage from "../NotFoundPage";
+import GroupDetails from "../GroupDetails";
 
 class Router extends Component {
   render() {
     // Properties
-    const {user, roles, bar} = this.props;
+    const { user, roles, bar } = this.props;
 
     // Functions
-    const {openSnackbar} = this.props;
+    const { openSnackbar } = this.props;
 
     return (
       <BrowserRouter basename={process.env.REACT_APP_BASENAME}>
@@ -23,24 +24,27 @@ class Router extends Component {
 
         <Switch>
           <Route path="/" exact>
-            <HomePage user={user} openSnackbar={openSnackbar}/>
+            <HomePage user={user} openSnackbar={openSnackbar} />
           </Route>
 
           <Route path="/admin">
             {user && roles.includes("admin") ? (
-              <AdminPage/>
+              <AdminPage />
             ) : (
-              <Redirect to="/"/>
+              <Redirect to="/" />
             )}
           </Route>
 
           <Route path="/user/:userId">
-            {user ? <UserPage/> : <Redirect to="/"/>}
+            {user ? <UserPage /> : <Redirect to="/" />}
           </Route>
 
+          <Route path="/gdetails" exact>
+            {user ? <GroupDetails /> : <Redirect to="/" />}
+          </Route>
 
           <Route>
-            <NotFoundPage/>
+            <NotFoundPage />
           </Route>
         </Switch>
       </BrowserRouter>
