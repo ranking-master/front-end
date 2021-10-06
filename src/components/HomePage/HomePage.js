@@ -1,6 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 
 import PropTypes from "prop-types";
+import { useSelector, useDispatch } from 'react-redux'
+import { decrement, incrementByAmount } from '../../features/counter/counterSlice'
 
 import { withRouter } from "react-router-dom";
 
@@ -13,10 +15,15 @@ import EmptyState from "../EmptyState";
 import { ReactComponent as CabinIllustration } from "../../illustrations/cabin.svg";
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 
-class HomePage extends Component {
-  signInWithEmailLink = () => {
-    const { user } = this.props;
+function HomePage({user}) {
+  const count = useSelector((state) => state.counter.value)
+  const dispatch = useDispatch()
 
+  React.useEffect(() => {
+    signInWithEmailLink(user)
+  }, [])
+
+  const signInWithEmailLink = (user) => {
     if (user) {
       return;
     }
@@ -69,31 +76,43 @@ class HomePage extends Component {
     }
   };
 
-  render() {
-    const { user } = this.props;
 
-    if (user) {
-      return (
+  if (user) {
+    return (
+      <>
         <EmptyState
-          image={<CabinIllustration />}
+          image={<CabinIllustration/>}
           title="Home"
           description="This is the home page. You can edit it from HomePage.js."
         />
-      );
-    }
-
-    return (
-      <EmptyState
-        image={<InsertBlockIllustration />}
-        title="RMUIF"
-        description="Supercharged version of Create React App with all the bells and whistles."
-      />
+        <div>
+          <div>
+            <button
+              aria-label="Increment value"
+              onClick={() => dispatch(incrementByAmount(10))}
+            >
+              Increment
+            </button>
+            <span>{count}</span>
+            <button
+              aria-label="Decrement value"
+              onClick={() => dispatch(decrement())}
+            >
+              Decrement
+            </button>
+          </div>
+        </div>
+      </>
     );
   }
 
-  componentDidMount() {
-    this.signInWithEmailLink();
-  }
+  return (
+    <EmptyState
+      image={<InsertBlockIllustration/>}
+      title="RMUIF"
+      description="Supercharged version of Create React App with all the bells and whistles."
+    />
+  );
 }
 
 HomePage.propTypes = {
