@@ -9,7 +9,12 @@ export const groupSlice = createSlice({
   initialState,
   reducers: {
     addGroup: (state, action) => {
-      
-    }
+      state.groups.push(action.payload)
+    },
   }
 })
+
+
+export const {addGroup} = groupSlice.actions
+
+export default groupSlice.reducer

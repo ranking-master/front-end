@@ -298,13 +298,6 @@ class App extends Component {
                 userData={userData}
                 openSnackbar={this.openSnackbar}
                 dialogs={{
-                  // aboutDialog: {
-                  //   dialogProps: {
-                  //     open: aboutDialog.open,
-                  //
-                  //     onClose: () => this.closeDialog("aboutDialog"),
-                  //   },
-                  // },
 
                   signUpDialog: {
                     dialogProps: {
@@ -408,8 +401,11 @@ class App extends Component {
 
   componentDidMount() {
     this.onAuthStateChangedObserver = auth.onAuthStateChanged(
-      (user) => {
-        // The user is not signed in or doesn’t have a user ID.
+      async (user) => {
+        const idToken = await user.getIdToken()
+        user = {...user, ...{idToken}}
+        console.log(user)
+        // The user is not signed in or does not have a user ID.
         if (!user || !user.uid) {
           if (this.userDocumentSnapshotListener) {
             this.userDocumentSnapshotListener();
