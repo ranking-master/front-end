@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from 'react-redux'
-
+import firebase, { auth, storage } from "../../firebase";
 import {
   Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia,
   Divider,
@@ -10,13 +10,15 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  TextField, Typography
+  TextField, Tooltip, Typography
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 import EmptyState from "../EmptyState";
-import { fetchGroupById } from "../../features/group/groupSlice";
+import { fetchGroupById, updateGroup } from "../../features/group/groupSlice";
+import { fetchMembers } from "../../features/member/memberSlice";
+
 import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +35,46 @@ function GroupDetail({user}) {
   const dispatch = useDispatch()
   const {groupId} = useParams()
 
+  const members = useSelector((state) => state.member.members)
   const [group, setGroup] = React.useState(null)
+  const [image, setImage] = React.useState(null)
+  const [showTooltip, setShowTooltip] = React.useState(false)
+  const [downloadUrl, setDownloadUrl] = React.useState(null)
+
+  React.useEffect(() => {
+    dispatch(fetchMembers({user, groupId}))
+  }, [])
+
+  const handleChange = (e) => {
+    if (e.target.files[0]) {
+      setImage(e.target.files[0])
+    }
+  }
+
+  const handleUpload = () => {
+    try {
+      if (image) {
+        let file = image;
+        let storageRef = storage.ref();
+        let uploadTask = storageRef.child(`images/groups/${groupId}/${auth.currentUser.uid}`).put(file);
+
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+          (snapshot) => {
+            let progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes)) * 100
+          }, (error) => {
+            throw error
+          }, () => {
+            uploadTask.snapshot.ref.getDownloadURL().then(async (url) => {
+              setDownloadUrl(url)
+              dispatch(updateGroup({user, groupId, groupImageUrl: url}))
+            })
+          }
+        )
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   const getGroup = React.useCallback(async () => {
     const res = await dispatch(fetchGroupById({user, groupId}))
@@ -52,9 +93,37 @@ function GroupDetail({user}) {
             <Box padding={5}>
               <Card className={classes.cardRoot}>
                 <CardActionArea>
+                  {!group.img_url ? !image && <>
+                    <input
+                      id="avatar-input"
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleChange}
+                    />
+                    <label htmlFor="avatar-input">
+                      <Button
+                        color="primary"
+                        component="span"
+                        variant="contained"
+                        onClick={handleUpload}
+                      >
+                        Choose...
+                      </Button>
+                    </label>
+                  </> : null}
+                  {!group.img_url ? image && (
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      onClick={handleUpload}
+                    >
+                      Upload
+                    </Button>
+                  ) : null}
                   <CardMedia
                     className={classes.media}
-                    image=""
+                    image={group.img_url ? group.img_url : downloadUrl || "https://via.placeholder.com/400x300"}
                     title="Group Image"
                   />
                   <CardContent>
@@ -67,9 +136,18 @@ function GroupDetail({user}) {
                   </CardContent>
                 </CardActionArea>
                 <CardActions>
-                  <Button size="small" color="secondary">
-                    Share Group Link
-                  </Button>
+                  <Tooltip title={showTooltip ? 'Copied' : null}>
+                    <Button
+                      size="small"
+                      color="secondary"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}`)
+                        setShowTooltip(true)
+                      }}
+                    >
+                      Share Group Link
+                    </Button>
+                  </Tooltip>
                 </CardActions>
               </Card>
             </Box>
@@ -84,25 +162,23 @@ function GroupDetail({user}) {
             justifyContent="center"
             alignItems="center"
           >
-            {/*{groups.length !== 0 && <div className={classes.listRoot}>*/}
-            {/*  <List component="nav" aria-label="secondary mailbox folder">*/}
-            {/*    {groups.map((group, index) =>*/}
-            {/*      <ListItem*/}
-            {/*        key={index}*/}
-            {/*        button*/}
-            {/*        selected={selectedIndex === index}*/}
-            {/*        onClick={(event) => handleListItemClick(event, index)}*/}
-            {/*      >*/}
-            {/*        <ListItemText primary={group.name}/>*/}
-            {/*        <ListItemSecondaryAction>*/}
-            {/*          <IconButton edge="end" aria-label="go">*/}
-            {/*            <NavigateNextIcon/>*/}
-            {/*          </IconButton>*/}
-            {/*        </ListItemSecondaryAction>*/}
-            {/*      </ListItem>*/}
-            {/*    )}*/}
-            {/*  </List>*/}
-            {/*</div>}*/}
+            {members.length !== 0 && <div className={classes.listRoot}>
+              <List component="nav" aria-label="secondary mailbox folder">
+                {members.map((member, index) =>
+                  <ListItem
+                    key={index}
+                    button
+                  >
+                    <ListItemText primary={member.name}/>
+                    <ListItemSecondaryAction>
+                      {/*<IconButton edge="end" aria-label="go">*/}
+                      {/*  <NavigateNextIcon/>*/}
+                      {/*</IconButton>*/}
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                )}
+              </List>
+            </div>}
           </Grid>
         </Grid>
       </div>
@@ -112,8 +188,8 @@ function GroupDetail({user}) {
   return (
     <EmptyState
       image={<InsertBlockIllustration/>}
-      title="RMUIF"
-      description="Supercharged version of Create React App with all the bells and whistles."
+      title="Ranking Master"
+      description="The rating app you need for your next game"
     />
   );
 }

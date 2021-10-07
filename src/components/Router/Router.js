@@ -9,6 +9,7 @@ import AdminPage from "../AdminPage";
 import UserPage from "../UserPage";
 import NotFoundPage from "../NotFoundPage";
 import GroupDetail from "../GroupDetail";
+import JoinGroup from "../JoinGroup";
 
 class Router extends Component {
   render() {
@@ -43,6 +44,9 @@ class Router extends Component {
             <GroupDetail user={user}/>
           </Route>
 
+          <Route path="/join/:uuid">
+            <JoinGroup user={user}/>
+          </Route>
 
           <Route>
             <NotFoundPage/>

@@ -19,7 +19,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import AddIcon from '@material-ui/icons/Add';
 import { Link, withRouter } from "react-router-dom";
 
-import { auth, storage } from "../../firebase";
+import { auth } from "../../firebase";
 
 import authentication from "../../services/authentication";
 
@@ -221,8 +221,8 @@ function HomePage({user}) {
   return (
     <EmptyState
       image={<InsertBlockIllustration/>}
-      title="RMUIF"
-      description="Supercharged version of Create React App with all the bells and whistles."
+      title="Ranking Master"
+      description="The rating app you need for your next game"
     />
   );
 }
