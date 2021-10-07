@@ -19,7 +19,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import AddIcon from '@material-ui/icons/Add';
 import { Link, withRouter } from "react-router-dom";
 
-import { auth } from "../../firebase";
+import { auth, storage } from "../../firebase";
 
 import authentication from "../../services/authentication";
 
@@ -42,11 +42,7 @@ function HomePage({user}) {
 
   const groups = useSelector((state) => state.group.groups)
   const [group, setGroup] = React.useState('')
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
-
-  const handleListItemClick = (event, index) => {
-    setSelectedIndex(index);
-  };
+  const [groupIcon, setGroupIcon] = React.useState({groupImage: null, groupImageUrl: null})
 
   React.useEffect(() => {
     signInWithEmailLink(user)
@@ -72,6 +68,44 @@ function HomePage({user}) {
     setGroup('')
   };
 
+  const handleAvatarChange = (event) => {
+    if (!event) {
+      return;
+    }
+
+    const files = event.target.files;
+
+    if (!files) {
+      return;
+    }
+
+    const avatar = files[0];
+
+    if (!avatar) {
+      return;
+    }
+
+    const fileTypes = [
+      "image/gif",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/svg+xml",
+    ];
+
+    if (!fileTypes.includes(avatar.type)) {
+      return;
+    }
+
+    if (avatar.size > 20 * 1024 * 1024) {
+      return;
+    }
+
+    setGroupIcon({
+      groupImage: avatar,
+      groupImageUrl: URL.createObjectURL(avatar)
+    })
+  };
 
   const signInWithEmailLink = (user) => {
     if (user) {
@@ -165,7 +199,12 @@ function HomePage({user}) {
                   >
                     <ListItemText primary={group.name}/>
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="go" component={Link} to={`/group/${group.id}`}>
+                      <IconButton
+                        edge="end"
+                        aria-label="go"
+                        component={Link}
+                        to={`/group/${group.id}`}
+                      >
                         <NavigateNextIcon/>
                       </IconButton>
                     </ListItemSecondaryAction>

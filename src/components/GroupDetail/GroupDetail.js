@@ -3,14 +3,14 @@ import PropTypes from "prop-types";
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
-  Box,
+  Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia,
   Divider,
   Grid, IconButton,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  TextField
+  TextField, Typography
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
+  cardRoot: {width: '100%',}, media: {height: 140}
 }));
 
 function GroupDetail({user}) {
@@ -48,9 +49,31 @@ function GroupDetail({user}) {
       <div style={{flexGrow: 1}}>
         {group && <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Box textAlign="center" padding={5}>
-              <p>{group.name}</p>
+            <Box padding={5}>
+              <Card className={classes.cardRoot}>
+                <CardActionArea>
+                  <CardMedia
+                    className={classes.media}
+                    image=""
+                    title="Group Image"
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {group.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" component="p">
+                      {group.description}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+                <CardActions>
+                  <Button size="small" color="secondary">
+                    Share Group Link
+                  </Button>
+                </CardActions>
+              </Card>
             </Box>
+
           </Grid>
         </Grid>}
         <Divider/>

@@ -8,15 +8,17 @@ const initialState = {
 export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
   async ({user}) => {
-    const response = await axios.get(`${process.env.BACKEND_API}/groups/getGroup?sort=createdAt&order=ASC&page=1&limit=10&search=`, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-type": "Application/json",
-        "Authorization": `Bearer ${user.idToken}`
-      }
-    })
-    
-    return response.data.data.allGroups
+    // const response = await axios.get(`${process.env.BACKEND_API}/groups/getGroup?sort=createdAt&order=ASC&page=1&limit=10&search=`, {
+    //   headers: {
+    //     "Access-Control-Allow-Origin": "*",
+    //     "Content-type": "Application/json",
+    //     "Authorization": `Bearer ${user.idToken}`
+    //   }
+    // })
+
+    // return response.data.data.allGroups
+
+    return [{id: '1', name: 'a'}, {id: '2', name: 'b'}]
   }
 )
 
@@ -38,15 +40,16 @@ export const createGroup = createAsyncThunk(
 )
 
 export const fetchGroupById = createAsyncThunk('group/fetchGroupById', async ({user, groupId}) => {
-  const response = await axios.get(`${process.env.BACKEND_API}/groups/getGroup/${groupId}`, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Content-type": "Application/json",
-      "Authorization": `Bearer ${user.idToken}`
-    }
-  })
+  // const response = await axios.get(`${process.env.BACKEND_API}/groups/getGroup/${groupId}`, {
+  //   headers: {
+  //     "Access-Control-Allow-Origin": "*",
+  //     "Content-type": "Application/json",
+  //     "Authorization": `Bearer ${user.idToken}`
+  //   }
+  // })
 
-  return response.data.data
+  // return response.data.data
+  return {id: "1", name: "a"}
 })
 
 export const groupSlice = createSlice({
