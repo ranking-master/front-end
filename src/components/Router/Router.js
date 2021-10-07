@@ -8,6 +8,7 @@ import HomePage from "../HomePage";
 import AdminPage from "../AdminPage";
 import UserPage from "../UserPage";
 import NotFoundPage from "../NotFoundPage";
+import GroupDetail from "../GroupDetail";
 
 class Router extends Component {
   render() {
@@ -36,6 +37,10 @@ class Router extends Component {
 
           <Route path="/user/:userId">
             {user ? <UserPage/> : <Redirect to="/"/>}
+          </Route>
+
+          <Route path="/group/:groupId">
+            <GroupDetail user={user}/>
           </Route>
 
 

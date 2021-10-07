@@ -402,9 +402,10 @@ class App extends Component {
   componentDidMount() {
     this.onAuthStateChangedObserver = auth.onAuthStateChanged(
       async (user) => {
-        const idToken = await user.getIdToken()
-        user = {...user, ...{idToken}}
-        console.log(user)
+        if (user) {
+          const idToken = await user.getIdToken()
+          user = {...user, ...{idToken}}
+        }
         // The user is not signed in or does not have a user ID.
         if (!user || !user.uid) {
           if (this.userDocumentSnapshotListener) {

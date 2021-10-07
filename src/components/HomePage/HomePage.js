@@ -2,7 +2,7 @@ import React from "react";
 
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from 'react-redux'
-import { addGroup } from "../../features/group/groupSlice";
+import { createGroup, fetchGroups } from "../../features/group/groupSlice";
 
 import {
   Box,
@@ -17,8 +17,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import AddIcon from '@material-ui/icons/Add';
-import { Card, CardHeader } from "@material-ui/core";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
 import { auth } from "../../firebase";
 
@@ -39,9 +38,9 @@ const useStyles = makeStyles((theme) => ({
 
 function HomePage({user}) {
   const classes = useStyles();
+  const dispatch = useDispatch()
 
   const groups = useSelector((state) => state.group.groups)
-  const dispatch = useDispatch()
   const [group, setGroup] = React.useState('')
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
@@ -51,6 +50,10 @@ function HomePage({user}) {
 
   React.useEffect(() => {
     signInWithEmailLink(user)
+  }, [])
+
+  React.useEffect(() => {
+    dispatch(fetchGroups({user}))
   }, [])
 
   const handleGroupNameChange = (event) => {
@@ -63,48 +66,12 @@ function HomePage({user}) {
     setGroup(groupName)
   };
 
-  // const hideFields = () => {
-  //   setGroup('')
-  // };
 
   const changeGroupName = () => {
-    dispatch(addGroup(group))
+    dispatch(createGroup({user, group}))
     setGroup('')
   };
 
-  // const changeField = (fieldId) => {
-  //   switch (fieldId) {
-  //     case "group-name":
-  //       changeGroupName();
-  //       return;
-  //     default:
-  //       return;
-  //   }
-  // };
-
-  // const handleKeyDown = (event, fieldId) => {
-  //   if (!event || !fieldId) {
-  //     return;
-  //   }
-  //
-  //   if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
-  //     return;
-  //   }
-  //
-  //   const key = event.key;
-  //
-  //   if (!key) {
-  //     return;
-  //   }
-  //
-  //
-  //   if (key === "Escape") {
-  //     hideFields();
-  //   } else if (key === "Enter") {
-  //     changeField(fieldId);
-  //     event.preventDefault()
-  //   }
-  // };
 
   const signInWithEmailLink = (user) => {
     if (user) {
@@ -166,10 +133,12 @@ function HomePage({user}) {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Box textAlign="center" padding={5}>
-              <TextField id="outlined-basic" label="Outlined" variant="outlined"
-                // onKeyDown={(event) => handleKeyDown(event, "group-name")}
-                         onChange={handleGroupNameChange}
-                         value={group}
+              <TextField
+                id="outlined-basic"
+                label="Group name"
+                variant="outlined"
+                onChange={handleGroupNameChange}
+                value={group}
               />
               <IconButton onClick={changeGroupName}>
                 <AddIcon/>
@@ -191,12 +160,12 @@ function HomePage({user}) {
                   <ListItem
                     key={index}
                     button
-                    selected={selectedIndex === index}
-                    onClick={(event) => handleListItemClick(event, index)}
+                    component={Link}
+                    to={`/group/${group.id}`}
                   >
-                    <ListItemText primary={group}/>
+                    <ListItemText primary={group.name}/>
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="go">
+                      <IconButton edge="end" aria-label="go" component={Link} to={`/group/${group.id}`}>
                         <NavigateNextIcon/>
                       </IconButton>
                     </ListItemSecondaryAction>
