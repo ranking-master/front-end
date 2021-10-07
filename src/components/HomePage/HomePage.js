@@ -76,14 +76,13 @@ class HomePage extends Component {
     if (user) {
       return (
         <div>
-          <GroupList />
+          <GroupList user = {user} />
         </div>
         // <EmptyState
         //   image={<CabinIllustration />}
         //   title="Home"
         //   description="This is the home page. You can edit it from HomePage.js."
         // />
-        // <groupList/>
       );
     }
 

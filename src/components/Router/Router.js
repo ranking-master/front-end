@@ -39,7 +39,7 @@ class Router extends Component {
             {user ? <UserPage /> : <Redirect to="/" />}
           </Route>
 
-          <Route path="/gdetails" exact>
+          <Route path="/gdetails/:gid" exact>
             {user ? <GroupDetails /> : <Redirect to="/" />}
           </Route>
 
