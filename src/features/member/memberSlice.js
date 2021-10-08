@@ -19,8 +19,7 @@ export const fetchMembers = createAsyncThunk(
       }
     })
 
-    console.log(response.data)
-    return response.data
+    return response.data.data
   }
 )
 

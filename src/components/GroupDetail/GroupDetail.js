@@ -7,7 +7,7 @@ import {
   Divider,
   Grid, IconButton,
   List,
-  ListItem,
+  ListItem, ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   TextField, Tooltip, Typography
@@ -44,7 +44,6 @@ function GroupDetail({user}) {
   React.useEffect(() => {
     dispatch(fetchMembers({user, groupId}))
   }, [])
-
   const handleChange = (e) => {
     if (e.target.files[0]) {
       setImage(e.target.files[0])
@@ -169,8 +168,13 @@ function GroupDetail({user}) {
                     key={index}
                     button
                   >
-                    <ListItemText primary={member.name}/>
+                    <ListItemIcon>
+                      <ListItemText primary={index + 1}/>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}/>
                     <ListItemSecondaryAction>
+                      <ListItemText primary={member.rating_point}/>
                       {/*<IconButton edge="end" aria-label="go">*/}
                       {/*  <NavigateNextIcon/>*/}
                       {/*</IconButton>*/}
