@@ -12,7 +12,7 @@ import {
   ListItemText,
   TextField, Tooltip, Typography
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 import EmptyState from "../EmptyState";
@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 function GroupDetail({user}) {
   const classes = useStyles();
+  const theme = useTheme()
   const dispatch = useDispatch()
   const {groupId} = useParams()
 
@@ -92,39 +93,39 @@ function GroupDetail({user}) {
             <Box padding={5}>
               <Card className={classes.cardRoot}>
                 <CardActionArea>
-                  {!group.img_url ? !image && <>
-                    <input
-                      id="avatar-input"
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      onChange={handleChange}
-                    />
-                    <label htmlFor="avatar-input">
-                      <Button
-                        color="primary"
-                        component="span"
-                        variant="contained"
-                        onClick={handleUpload}
-                      >
-                        Choose...
-                      </Button>
-                    </label>
-                  </> : null}
-                  {!group.img_url ? image && (
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      onClick={handleUpload}
-                    >
-                      Upload
-                    </Button>
-                  ) : null}
-                  <CardMedia
-                    className={classes.media}
-                    image={group.img_url ? group.img_url : downloadUrl || "https://via.placeholder.com/400x300"}
-                    title="Group Image"
-                  />
+                  {/*{!group.img_url ? !image && <>*/}
+                  {/*  <input*/}
+                  {/*    id="avatar-input"*/}
+                  {/*    type="file"*/}
+                  {/*    hidden*/}
+                  {/*    accept="image/*"*/}
+                  {/*    onChange={handleChange}*/}
+                  {/*  />*/}
+                  {/*  <label htmlFor="avatar-input">*/}
+                  {/*    <Button*/}
+                  {/*      color="primary"*/}
+                  {/*      component="span"*/}
+                  {/*      variant="contained"*/}
+                  {/*      onClick={handleUpload}*/}
+                  {/*    >*/}
+                  {/*      Choose...*/}
+                  {/*    </Button>*/}
+                  {/*  </label>*/}
+                  {/*</> : null}*/}
+                  {/*{!group.img_url ? image && (*/}
+                  {/*  <Button*/}
+                  {/*    color="primary"*/}
+                  {/*    variant="contained"*/}
+                  {/*    onClick={handleUpload}*/}
+                  {/*  >*/}
+                  {/*    Upload*/}
+                  {/*  </Button>*/}
+                  {/*) : null}*/}
+                  {/*<CardMedia*/}
+                  {/*  className={classes.media}*/}
+                  {/*  image={group.img_url ? group.img_url : downloadUrl || "https://via.placeholder.com/400x300"}*/}
+                  {/*  title="Group Image"*/}
+                  {/*/>*/}
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
                       {group.name}
@@ -140,7 +141,7 @@ function GroupDetail({user}) {
                       size="small"
                       color="secondary"
                       onClick={() => {
-                        navigator.clipboard.writeText(`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}`)
+                        navigator.clipboard.writeText(`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`)
                         setShowTooltip(true)
                       }}
                     >
@@ -167,6 +168,9 @@ function GroupDetail({user}) {
                   <ListItem
                     key={index}
                     button
+                    style={{
+                      background: member.admin ? theme.palette.primary.main : null
+                    }}
                   >
                     <ListItemIcon>
                       <ListItemText primary={index + 1}/>

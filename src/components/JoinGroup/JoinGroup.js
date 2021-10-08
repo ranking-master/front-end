@@ -16,7 +16,7 @@ import { useParams, useHistory } from "react-router-dom";
 function JoinGroup({user}) {
   const dispatch = useDispatch()
   let history = useHistory();
-  const {uuid} = useParams()
+  const {uuid, groupId} = useParams()
 
 
   if (user) {
@@ -27,7 +27,7 @@ function JoinGroup({user}) {
             <Box textAlign="center" padding={5}>
               <Button variant="contained" color="secondary" onClick={() => {
                 dispatch(joinGroup({user, uuid}))
-                history.push('/')
+                history.push(`/group/${groupId}`)
               }}>
                 JOIN
               </Button>

@@ -44,7 +44,7 @@ class Router extends Component {
             <GroupDetail user={user}/>
           </Route>
 
-          <Route path="/join/:uuid">
+          <Route path="/join/:uuid/:groupId">
             <JoinGroup user={user}/>
           </Route>
 

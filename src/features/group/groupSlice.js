@@ -11,7 +11,7 @@ const initialState = {
 export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
   async ({user}) => {
-    const response = await axios.get(`${API}/groups/getGroup?sort=createdAt&order=ASC&page=1&limit=10&search=`, {
+    const response = await axios.get(`${API}/groups/getGroup?sort=createdAt&order=ASC&page=1&limit=100&search=`, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Content-type": "Application/json",
