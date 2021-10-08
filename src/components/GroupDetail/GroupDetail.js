@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
-  cardRoot: {width: '100%',}, media: {height: 140}
+  cardRoot: {width: '100%',}, media: {height: 250}
 }));
 
 function GroupDetail({user}) {
@@ -66,7 +66,7 @@ function GroupDetail({user}) {
           }, () => {
             uploadTask.snapshot.ref.getDownloadURL().then(async (url) => {
               setDownloadUrl(url)
-              dispatch(updateGroup({user, groupId, groupImageUrl: url}))
+              await dispatch(updateGroup({user, groupId, groupImageUrl: url}))
             })
           }
         )

@@ -11,8 +11,16 @@ const initialState = {
 export const fetchMembers = createAsyncThunk(
   'member/fetchMembers',
   async ({user, groupId}) => {
-    
-    return []
+    const response = await axios.get(`${API}/groups/getAllMembers/${groupId}`, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-type": "Application/json",
+        "Authorization": `Bearer ${user.idToken}`
+      }
+    })
+
+    console.log(response.data)
+    return response.data
   }
 )
 
