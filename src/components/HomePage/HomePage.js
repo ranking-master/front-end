@@ -24,6 +24,7 @@ import { auth } from "../../firebase";
 import authentication from "../../services/authentication";
 
 import EmptyState from "../EmptyState";
+import Loader from '../Loader'
 
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 
@@ -42,14 +43,20 @@ function HomePage({user}) {
 
   const groups = useSelector((state) => state.group.groups)
   const [group, setGroup] = React.useState('')
+  const [loading, setLoading] = React.useState(true)
   const [groupIcon, setGroupIcon] = React.useState({groupImage: null, groupImageUrl: null})
 
   React.useEffect(() => {
     signInWithEmailLink(user)
   }, [])
 
+  const getGroups = React.useCallback(async () => {
+    await dispatch(fetchGroups({user}))
+    setLoading(false)
+  }, [])
+
   React.useEffect(() => {
-    dispatch(fetchGroups({user}))
+    getGroups()
   }, [])
 
   const handleGroupNameChange = (event) => {
@@ -162,60 +169,64 @@ function HomePage({user}) {
 
 
   if (user) {
-    return (
-      <div style={{flexGrow: 1}}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Box textAlign="center" padding={5}>
-              <TextField
-                id="outlined-basic"
-                label="Group name"
-                variant="outlined"
-                onChange={handleGroupNameChange}
-                value={group}
-              />
-              <IconButton onClick={changeGroupName}>
-                <AddIcon/>
-              </IconButton>
-            </Box>
+    if (loading) {
+      return <Loader/>
+    } else {
+      return (
+        <div style={{flexGrow: 1}}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Box textAlign="center" padding={5}>
+                <TextField
+                  id="outlined-basic"
+                  label="Group name"
+                  variant="outlined"
+                  onChange={handleGroupNameChange}
+                  value={group}
+                />
+                <IconButton onClick={changeGroupName}>
+                  <AddIcon/>
+                </IconButton>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-        <Divider/>
-        <Grid container>
-          <Grid
-            item xs={12}
-            container direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            {groups.length !== 0 && <div className={classes.listRoot}>
-              <List component="nav" aria-label="secondary mailbox folder">
-                {groups.map((group, index) =>
-                  <ListItem
-                    key={index}
-                    button
-                    component={Link}
-                    to={`/group/${group.id}`}
-                  >
-                    <ListItemText primary={group.name}/>
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        aria-label="go"
-                        component={Link}
-                        to={`/group/${group.id}`}
-                      >
-                        <NavigateNextIcon/>
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                )}
-              </List>
-            </div>}
+          <Divider/>
+          <Grid container>
+            <Grid
+              item xs={12}
+              container direction="row"
+              justifyContent="center"
+              alignItems="center"
+            >
+              {groups.length !== 0 && <div className={classes.listRoot}>
+                <List component="nav" aria-label="secondary mailbox folder">
+                  {groups.map((group, index) =>
+                    <ListItem
+                      key={index}
+                      button
+                      component={Link}
+                      to={`/group/${group.id}`}
+                    >
+                      <ListItemText primary={group.name}/>
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          aria-label="go"
+                          component={Link}
+                          to={`/group/${group.id}`}
+                        >
+                          <NavigateNextIcon/>
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )}
+                </List>
+              </div>}
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
-    );
+        </div>
+      );
+    }
   }
 
   return (

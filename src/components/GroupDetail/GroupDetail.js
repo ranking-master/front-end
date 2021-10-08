@@ -16,6 +16,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 import EmptyState from "../EmptyState";
+import Loader from '../Loader'
 import { fetchGroupById, updateGroup } from "../../features/group/groupSlice";
 import { fetchMembers } from "../../features/member/memberSlice";
 
@@ -39,12 +40,19 @@ function GroupDetail({user}) {
   const members = useSelector((state) => state.member.members)
   const [group, setGroup] = React.useState(null)
   const [image, setImage] = React.useState(null)
+  const [loading, setLoading] = React.useState(true)
   const [showTooltip, setShowTooltip] = React.useState(false)
   const [downloadUrl, setDownloadUrl] = React.useState(null)
 
-  React.useEffect(() => {
-    dispatch(fetchMembers({user, groupId}))
+  const getMembers = React.useCallback(async () => {
+    await dispatch(fetchMembers({user, groupId}))
+    setLoading(false)
   }, [])
+
+  React.useEffect(() => {
+    getMembers();
+  }, [])
+
   const handleChange = (e) => {
     if (e.target.files[0]) {
       setImage(e.target.files[0])
@@ -86,111 +94,115 @@ function GroupDetail({user}) {
   }, [])
 
   if (user) {
-    return (
-      <div style={{flexGrow: 1}}>
-        {group && <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Box padding={5}>
-              <Card className={classes.cardRoot}>
-                <CardActionArea>
-                  {/*{!group.img_url ? !image && <>*/}
-                  {/*  <input*/}
-                  {/*    id="avatar-input"*/}
-                  {/*    type="file"*/}
-                  {/*    hidden*/}
-                  {/*    accept="image/*"*/}
-                  {/*    onChange={handleChange}*/}
-                  {/*  />*/}
-                  {/*  <label htmlFor="avatar-input">*/}
-                  {/*    <Button*/}
-                  {/*      color="primary"*/}
-                  {/*      component="span"*/}
-                  {/*      variant="contained"*/}
-                  {/*      onClick={handleUpload}*/}
-                  {/*    >*/}
-                  {/*      Choose...*/}
-                  {/*    </Button>*/}
-                  {/*  </label>*/}
-                  {/*</> : null}*/}
-                  {/*{!group.img_url ? image && (*/}
-                  {/*  <Button*/}
-                  {/*    color="primary"*/}
-                  {/*    variant="contained"*/}
-                  {/*    onClick={handleUpload}*/}
-                  {/*  >*/}
-                  {/*    Upload*/}
-                  {/*  </Button>*/}
-                  {/*) : null}*/}
-                  {/*<CardMedia*/}
-                  {/*  className={classes.media}*/}
-                  {/*  image={group.img_url ? group.img_url : downloadUrl || "https://via.placeholder.com/400x300"}*/}
-                  {/*  title="Group Image"*/}
-                  {/*/>*/}
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {group.name}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                      {group.description}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-                <CardActions>
-                  <Tooltip title={showTooltip ? 'Copied' : null}>
-                    <Button
-                      size="small"
-                      color="secondary"
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`)
-                        setShowTooltip(true)
+    if (loading) {
+      return <Loader/>
+    } else {
+      return (
+        <div style={{flexGrow: 1}}>
+          {group && <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Box padding={5}>
+                <Card className={classes.cardRoot}>
+                  <CardActionArea>
+                    {/*{!group.img_url ? !image && <>*/}
+                    {/*  <input*/}
+                    {/*    id="avatar-input"*/}
+                    {/*    type="file"*/}
+                    {/*    hidden*/}
+                    {/*    accept="image/*"*/}
+                    {/*    onChange={handleChange}*/}
+                    {/*  />*/}
+                    {/*  <label htmlFor="avatar-input">*/}
+                    {/*    <Button*/}
+                    {/*      color="primary"*/}
+                    {/*      component="span"*/}
+                    {/*      variant="contained"*/}
+                    {/*      onClick={handleUpload}*/}
+                    {/*    >*/}
+                    {/*      Choose...*/}
+                    {/*    </Button>*/}
+                    {/*  </label>*/}
+                    {/*</> : null}*/}
+                    {/*{!group.img_url ? image && (*/}
+                    {/*  <Button*/}
+                    {/*    color="primary"*/}
+                    {/*    variant="contained"*/}
+                    {/*    onClick={handleUpload}*/}
+                    {/*  >*/}
+                    {/*    Upload*/}
+                    {/*  </Button>*/}
+                    {/*) : null}*/}
+                    {/*<CardMedia*/}
+                    {/*  className={classes.media}*/}
+                    {/*  image={group.img_url ? group.img_url : downloadUrl || "https://via.placeholder.com/400x300"}*/}
+                    {/*  title="Group Image"*/}
+                    {/*/>*/}
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {group.name}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary" component="p">
+                        {group.description}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                  <CardActions>
+                    <Tooltip title={showTooltip ? 'Copied' : null}>
+                      <Button
+                        size="small"
+                        color="secondary"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`)
+                          setShowTooltip(true)
+                        }}
+                      >
+                        Share Group Link
+                      </Button>
+                    </Tooltip>
+                  </CardActions>
+                </Card>
+              </Box>
+
+            </Grid>
+          </Grid>}
+          <Divider/>
+          <Grid container>
+            <Grid
+              item xs={12}
+              container direction="row"
+              justifyContent="center"
+              alignItems="center"
+            >
+              {members.length !== 0 && <div className={classes.listRoot}>
+                <List component="nav" aria-label="secondary mailbox folder">
+                  {members.map((member, index) =>
+                    <ListItem
+                      key={index}
+                      button
+                      style={{
+                        background: member.admin ? theme.palette.primary.main : null
                       }}
                     >
-                      Share Group Link
-                    </Button>
-                  </Tooltip>
-                </CardActions>
-              </Card>
-            </Box>
-
+                      <ListItemIcon>
+                        <ListItemText primary={index + 1}/>
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}/>
+                      <ListItemSecondaryAction>
+                        <ListItemText primary={member.rating_point}/>
+                        {/*<IconButton edge="end" aria-label="go">*/}
+                        {/*  <NavigateNextIcon/>*/}
+                        {/*</IconButton>*/}
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )}
+                </List>
+              </div>}
+            </Grid>
           </Grid>
-        </Grid>}
-        <Divider/>
-        <Grid container>
-          <Grid
-            item xs={12}
-            container direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            {members.length !== 0 && <div className={classes.listRoot}>
-              <List component="nav" aria-label="secondary mailbox folder">
-                {members.map((member, index) =>
-                  <ListItem
-                    key={index}
-                    button
-                    style={{
-                      background: member.admin ? theme.palette.primary.main : null
-                    }}
-                  >
-                    <ListItemIcon>
-                      <ListItemText primary={index + 1}/>
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}/>
-                    <ListItemSecondaryAction>
-                      <ListItemText primary={member.rating_point}/>
-                      {/*<IconButton edge="end" aria-label="go">*/}
-                      {/*  <NavigateNextIcon/>*/}
-                      {/*</IconButton>*/}
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                )}
-              </List>
-            </div>}
-          </Grid>
-        </Grid>
-      </div>
-    );
+        </div>
+      );
+    }
   }
 
   return (
