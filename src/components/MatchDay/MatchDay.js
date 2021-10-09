@@ -18,6 +18,7 @@ import Loader from "../Loader";
 import { TextField } from "@material-ui/core";
 import { createMatch } from "../../features/match/matchSlice";
 import UnAuthenticated from "../UnAuthenticated";
+import { formatName } from "../../data/formatName";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -168,7 +169,7 @@ function MatchDay({user}) {
               </ListItemIcon>
               <ListItemText
                 id={labelId}
-                primary={value.firstName ? value.lastName ? value.firstName + ' ' + value.lastName : value.firstName : value.email}/>
+                primary={formatName(value)}/>
             </ListItem>
           );
         })}

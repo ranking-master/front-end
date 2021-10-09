@@ -22,6 +22,7 @@ import {
 } from "../../features/match/matchSlice";
 import Loader from "../Loader";
 import UnAuthenticated from "../UnAuthenticated";
+import { formatName } from "../../data/formatName";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -93,7 +94,7 @@ function RatePlayer({user}) {
         key={index + 'member.id'}
         index={index}
         id={member.id}
-        text={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}
+        text={formatName(member)}
         moveCard={moveCard}
       />
     );

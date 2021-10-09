@@ -198,8 +198,10 @@ function HomePage({user}) {
               alignItems="center"
             >
               {groups.length !== 0 && <div className={classes.listRoot}>
-                <List subheader={<ListSubheader>Your groups</ListSubheader>} component="nav"
-                      aria-label="secondary mailbox folder">
+                <List
+                  subheader={<ListSubheader>Your groups</ListSubheader>}
+                  component="nav"
+                  aria-label="secondary mailbox folder">
                   {groups.map((group, index) =>
                     <ListItem
                       key={index}

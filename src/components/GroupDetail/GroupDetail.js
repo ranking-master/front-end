@@ -22,6 +22,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { fetchMatches } from "../../features/match/matchSlice";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import UnAuthenticated from "../UnAuthenticated";
+import { formatName } from "../../data/formatName";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
@@ -213,7 +214,7 @@ function GroupDetail({user}) {
                         <ListItemText primary={index + 1}/>
                       </ListItemIcon>
                       <ListItemText
-                        primary={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}/>
+                        primary={formatName(member)}/>
                       <ListItemSecondaryAction>
                         <ListItemText primary={`${member.rating_point} pts`}/>
                       </ListItemSecondaryAction>
