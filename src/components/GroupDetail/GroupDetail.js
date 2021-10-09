@@ -3,19 +3,17 @@ import PropTypes from "prop-types";
 import { useSelector, useDispatch } from 'react-redux'
 import firebase, { auth, storage } from "../../firebase";
 import {
-  Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia,
+  Box, Button, Card, CardActionArea, CardActions, CardContent,
   Divider,
   Grid, IconButton,
   List,
   ListItem, ListItemIcon,
   ListItemSecondaryAction,
   ListItemText, ListSubheader,
-  TextField, Tooltip, Typography
+  Tooltip, Typography
 } from "@material-ui/core";
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
-import EmptyState from "../EmptyState";
 import Loader from '../Loader'
 import { fetchGroupById, updateGroup } from "../../features/group/groupSlice";
 import { fetchMembers } from "../../features/member/memberSlice";
@@ -23,6 +21,7 @@ import { fetchMembers } from "../../features/member/memberSlice";
 import { useHistory, useParams } from "react-router-dom";
 import { fetchMatches } from "../../features/match/matchSlice";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import UnAuthenticated from "../UnAuthenticated";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
@@ -196,7 +195,7 @@ function GroupDetail({user}) {
               item xs={12}
               container direction="row"
               justifyContent="space-evenly"
-              alignItems="center"
+              alignItems="flex-start"
             >
               {members.length !== 0 &&
               <div className={classes.listRoot}>
@@ -216,10 +215,7 @@ function GroupDetail({user}) {
                       <ListItemText
                         primary={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}/>
                       <ListItemSecondaryAction>
-                        <ListItemText primary={member.rating_point}/>
-                        {/*<IconButton edge="end" aria-label="go">*/}
-                        {/*  <NavigateNextIcon/>*/}
-                        {/*</IconButton>*/}
+                        <ListItemText primary={`${member.rating_point} pts`}/>
                       </ListItemSecondaryAction>
                     </ListItem>
                   )}
@@ -255,11 +251,7 @@ function GroupDetail({user}) {
   }
 
   return (
-    <EmptyState
-      image={<InsertBlockIllustration/>}
-      title="Ranking Master"
-      description="The rating app you need for your next game"
-    />
+    <UnAuthenticated/>
   );
 }
 

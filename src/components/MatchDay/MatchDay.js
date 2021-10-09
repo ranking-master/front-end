@@ -11,14 +11,13 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { fetchMembers } from "../../features/member/memberSlice";
-import EmptyState from "../EmptyState";
 import Loader from "../Loader";
-import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 import { TextField } from "@material-ui/core";
 import { createMatch } from "../../features/match/matchSlice";
+import UnAuthenticated from "../UnAuthenticated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -169,7 +168,7 @@ function MatchDay({user}) {
               </ListItemIcon>
               <ListItemText
                 id={labelId}
-                primary={value.email}/>
+                primary={value.firstName ? value.lastName ? value.firstName + ' ' + value.lastName : value.firstName : value.email}/>
             </ListItem>
           );
         })}
@@ -231,7 +230,7 @@ function MatchDay({user}) {
               />
             </Grid>
             <Grid container justifyContent="center" alignItems="center" className={classes.innerRoot}>
-              <Button color="secondary" onClick={createMatchDay}>
+              <Button color="primary" onClick={createMatchDay}>
                 Create Match Day
               </Button>
             </Grid>
@@ -242,11 +241,7 @@ function MatchDay({user}) {
   }
 
   return (
-    <EmptyState
-      image={<InsertBlockIllustration/>}
-      title="Ranking Master"
-      description="The rating app you need for your next game"
-    />
+    <UnAuthenticated/>
   );
 
 

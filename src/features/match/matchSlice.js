@@ -81,6 +81,18 @@ export const isMemberInMatchDay = createAsyncThunk('group/isMemberInMatchDay', a
   return response.data.data
 })
 
+export const isRateSubmitted = createAsyncThunk('group/isRateSubmitted', async ({user, matchDayId}) => {
+  const response = await axios.get(`${API}/groups/checkAlreadyRated/${matchDayId}`, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-type": "Application/json",
+      "Authorization": `Bearer ${user.idToken}`
+    }
+  })
+
+  return response.data.data
+})
+
 export const submitRate = createAsyncThunk('group/submitRate', async ({user, matchDayId, userIds}) => {
   const response = await axios.post(`${API}/groups/addRating/${matchDayId}`, {user_id: userIds}, {
     headers: {
@@ -106,7 +118,7 @@ export const expireMatchDay = createAsyncThunk('group/expireMatchDay', async ({u
 })
 
 export const isMatchDayExpired = createAsyncThunk('group/isMatchDayExpired', async ({user, matchDayId}) => {
-  const response = await axios.get(`${API}/groups/checkRatingExpired/${matchDayId}`, {}, {
+  const response = await axios.get(`${API}/groups/checkRatingExpired/${matchDayId}`, {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Content-type": "Application/json",
@@ -122,7 +134,7 @@ export const matchSlice = createSlice({
   initialState,
   reducers: {}, extraReducers: (builder) => {
     builder.addCase(createMatch.fulfilled, (state, action) => {
-      state.matches.push(action.payload)
+      state.matches = [action.payload, ...state.matches]
     })
     builder.addCase(fetchMatches.fulfilled, (state, action) => {
       state.matches = action.payload

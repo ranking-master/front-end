@@ -79,11 +79,11 @@ export const groupSlice = createSlice({
   name: 'group',
   initialState,
   reducers: {}, extraReducers: (builder) => {
-    builder.addCase(fetchGroups.fulfilled, (state, action) => {
-      state.groups = action.payload
-    })
+    // builder.addCase(fetchGroups.fulfilled, (state, action) => {
+    //   state.groups = action.payload
+    // })
     builder.addCase(createGroup.fulfilled, (state, action) => {
-      state.groups.push(action.payload)
+      state.groups = [action.payload, ...state.groups]
     })
     builder.addCase(updateGroup.fulfilled, (state, action) => {
       state.groups.map(group => {

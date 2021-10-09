@@ -24,6 +24,7 @@ import {
   expireMatchDay,
   isMatchDayExpired
 } from "../../features/match/matchSlice";
+import UnAuthenticated from "../UnAuthenticated";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
@@ -81,7 +82,7 @@ function MatchDayDetail({user}) {
 
   const setMatchDayAsExpired = async () => {
     await dispatch(expireMatchDay({user, matchDayId}))
-    history.push(`/match-day-detail/${matchDayId}`)
+    setIsExpired(true)
   }
 
   if (user) {
@@ -101,7 +102,8 @@ function MatchDayDetail({user}) {
                       </Typography>
                     </CardContent>
                   </CardActionArea>
-                  {user.uid === matchDay.uid && <CardActions>
+                  {(user.uid === matchDay.uid ? !isExpired : false) &&
+                  <CardActions>
                     <Tooltip title={showTooltip ? 'Copied' : ''}>
                       <Button
                         size="small"
@@ -114,13 +116,13 @@ function MatchDayDetail({user}) {
                         Share Rate Link
                       </Button>
                     </Tooltip>
-                    {!isExpired && <Button
+                    <Button
                       size="small"
                       color="primary"
                       onClick={setMatchDayAsExpired}
                     >
                       Close Rating
-                    </Button>}
+                    </Button>
                   </CardActions>}
                 </Card>
               </Box>
@@ -167,11 +169,7 @@ function MatchDayDetail({user}) {
   }
 
   return (
-    <EmptyState
-      image={<InsertBlockIllustration/>}
-      title="Ranking Master"
-      description="The rating app you need for your next game"
-    />
+    <UnAuthenticated/>
   );
 }
 

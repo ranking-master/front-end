@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     border: '1px dashed gray',
     padding: '0.5rem 1rem',
     marginBottom: '.5rem',
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
     cursor: 'move',
   },
   buttonHoverCursor: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const Card = ({id, text, index, moveCard}) => {
+const RatePlayerList = ({id, text, index, moveCard}) => {
   const classes = useStyles();
   const ref = useRef(null);
   const [{handlerId}, drop] = useDrop({
@@ -101,3 +101,5 @@ export const Card = ({id, text, index, moveCard}) => {
     </ListItem>
   )
 };
+
+export default RatePlayerList

@@ -1,7 +1,7 @@
 import React from "react";
 
 import PropTypes from "prop-types";
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { createGroup, fetchGroups } from "../../features/group/groupSlice";
 
 import {
@@ -11,7 +11,7 @@ import {
   List,
   ListItem,
   ListItemSecondaryAction,
-  ListItemText,
+  ListItemText, ListSubheader,
   TextField
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,10 +23,8 @@ import { auth } from "../../firebase";
 
 import authentication from "../../services/authentication";
 
-import EmptyState from "../EmptyState";
 import Loader from '../Loader'
-
-import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
+import UnAuthenticated from "../UnAuthenticated";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +39,7 @@ function HomePage({user}) {
   const classes = useStyles();
   const dispatch = useDispatch()
 
-  const groups = useSelector((state) => state.group.groups)
+  const [groups, setGroups] = React.useState([])
   const [group, setGroup] = React.useState('')
   const [loading, setLoading] = React.useState(true)
   const [groupIcon, setGroupIcon] = React.useState({groupImage: null, groupImageUrl: null})
@@ -51,13 +49,14 @@ function HomePage({user}) {
   }, [])
 
   const getGroups = React.useCallback(async () => {
-    await dispatch(fetchGroups({user}))
+    const response = await dispatch(fetchGroups({user}))
+    setGroups(response.payload ?? [])
     setLoading(false)
-  }, [])
+  }, [user])
 
   React.useEffect(() => {
     getGroups()
-  }, [])
+  }, [user])
 
   const handleGroupNameChange = (event) => {
     if (!event) {
@@ -199,7 +198,8 @@ function HomePage({user}) {
               alignItems="center"
             >
               {groups.length !== 0 && <div className={classes.listRoot}>
-                <List component="nav" aria-label="secondary mailbox folder">
+                <List subheader={<ListSubheader>Your groups</ListSubheader>} component="nav"
+                      aria-label="secondary mailbox folder">
                   {groups.map((group, index) =>
                     <ListItem
                       key={index}
@@ -230,11 +230,7 @@ function HomePage({user}) {
   }
 
   return (
-    <EmptyState
-      image={<InsertBlockIllustration/>}
-      title="Ranking Master"
-      description="The rating app you need for your next game"
-    />
+    <UnAuthenticated/>
   );
 }
 

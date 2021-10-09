@@ -1,20 +1,27 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {
   Box, Button,
-  Grid, List, ListSubheader,
+  Grid, List, ListSubheader, Typography,
 } from "@material-ui/core";
 import update from 'immutability-helper';
 
-import { Card } from '../Card/Card';
+import RatePlayerList from '../RatePlayerList';
 
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 import EmptyState from "../EmptyState";
 import { makeStyles } from '@material-ui/core/styles';
 import { useParams, useHistory } from "react-router-dom";
-import { fetchMatchMembers, isMemberInMatchDay, submitRate } from "../../features/match/matchSlice";
+import {
+  fetchMatchMembers,
+  isMemberInMatchDay,
+  submitRate,
+  isRateSubmitted,
+  fetchMatchDayById
+} from "../../features/match/matchSlice";
 import Loader from "../Loader";
+import UnAuthenticated from "../UnAuthenticated";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -36,23 +43,39 @@ function RatePlayer({user}) {
 
   const [loading, setLoading] = React.useState(true)
   const [isAllowed, setIsAllowed] = React.useState(false)
+  const [isSubmitted, setIsSubmitted] = React.useState(false)
   const [members, setMembers] = React.useState([])
+  const [matchDay, setMatchDay] = React.useState(null)
+  const [thankYou, setThankYou] = React.useState(false)
 
   const getPlayersIfAllowed = React.useCallback(async () => {
-    setLoading(true)
-    const response = await dispatch(isMemberInMatchDay({user, uuid}))
-    const output = response.payload.is_authorized && !response.payload.is_expired
-    setIsAllowed(output)
-    const memberState = await dispatch(fetchMatchMembers({user, matchDayId}))
-    const filteredUsers = memberState.payload.filter(member => member.firebase_id !== user.uid)
-    setMembers(filteredUsers)
-    setLoading(false)
-  }, [])
+    if (user) {
+      setLoading(true)
+      const response = await dispatch(isMemberInMatchDay({user, uuid}))
+      const output = response.payload.is_authorized && !response.payload.is_expired
+      setIsAllowed(output)
+      const submittedResponse = await dispatch(isRateSubmitted({user, matchDayId}))
+      setIsSubmitted(submittedResponse.payload.is_already_rated);
+      const memberState = await dispatch(fetchMatchMembers({user, matchDayId}))
+      const filteredUsers = memberState.payload.filter(member => member.firebase_id !== user.uid)
+      setMembers(filteredUsers)
+      setLoading(false)
+    }
+  }, [user])
 
 
   React.useEffect(() => {
     getPlayersIfAllowed();
-  }, [])
+  }, [user])
+
+  const getMatchDay = React.useCallback(async () => {
+    const matchDayResponse = await dispatch(fetchMatchDayById({user, matchDayId}))
+    setMatchDay(matchDayResponse.payload)
+  }, [thankYou])
+
+  React.useEffect(() => {
+    getMatchDay()
+  }, [thankYou])
 
   const moveCard = React.useCallback((dragIndex, hoverIndex) => {
     const dragCard = members[dragIndex];
@@ -65,14 +88,20 @@ function RatePlayer({user}) {
   }, [members]);
 
   const renderCard = (member, index) => {
-    return (<Card key={index + 'member.id'} index={index} id={member.id}
-                  text={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}
-                  moveCard={moveCard}/>);
+    return (
+      <RatePlayerList
+        key={index + 'member.id'}
+        index={index}
+        id={member.id}
+        text={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}
+        moveCard={moveCard}
+      />
+    );
   };
 
   const submitRating = async () => {
     await dispatch(submitRate({user, matchDayId, userIds: members.map(member => member.id)}))
-    history.push(`/match-day-detail/${matchDayId}`)
+    setThankYou(true)
   }
 
   if (user) {
@@ -82,11 +111,33 @@ function RatePlayer({user}) {
       if (!isAllowed) {
         history.push('/')
       } else {
+        if (thankYou) {
+          return (
+            <EmptyState
+              image={<InsertBlockIllustration/>}
+              title={`Thank you for submitting your rating for ${matchDay.name}`}
+              description={`The player's scores will be updated once the remaining players submit their ${matchDay.name} ratings.`}
+            />
+          )
+        }
+
+        if (isSubmitted) {
+          return (
+            <EmptyState
+              image={<InsertBlockIllustration/>}
+              title="Rating already submitted for this match day"
+            />
+          )
+        }
+
         return (
           <div style={{flexGrow: 1}}>
             <Grid container spacing={3} justifyContent="center" alignItems="center">
               <Grid item xs={12} justifyContent="center" alignItems="center" container>
                 <Box textAlign="center" padding={5}>
+                  <Typography>
+                    Rate the players by press and drag to <br/> their respective rankings for this match day
+                  </Typography>
                   <List
                     subheader={<ListSubheader>Players</ListSubheader>}
                     component="nav"
@@ -112,11 +163,7 @@ function RatePlayer({user}) {
   }
 
   return (
-    <EmptyState
-      image={<InsertBlockIllustration/>}
-      title="Ranking Master"
-      description="The rating app you need for your next game"
-    />
+    <UnAuthenticated/>
   );
 }
 
