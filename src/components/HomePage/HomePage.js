@@ -1,7 +1,7 @@
 import React from "react";
 
 import PropTypes from "prop-types";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { createGroup, fetchGroups } from "../../features/group/groupSlice";
 
 import {
@@ -39,7 +39,8 @@ function HomePage({user}) {
   const classes = useStyles();
   const dispatch = useDispatch()
 
-  const [groups, setGroups] = React.useState([])
+  // const [groups, setGroups] = React.useState([])
+  const groups = useSelector(state => state.group.groups)
   const [group, setGroup] = React.useState('')
   const [loading, setLoading] = React.useState(true)
   const [groupIcon, setGroupIcon] = React.useState({groupImage: null, groupImageUrl: null})
@@ -49,14 +50,15 @@ function HomePage({user}) {
   }, [])
 
   const getGroups = React.useCallback(async () => {
-    const response = await dispatch(fetchGroups({user}))
-    setGroups(response.payload ?? [])
-    setLoading(false)
-  }, [user])
+    if (user) {
+      await dispatch(fetchGroups({user}))
+      setLoading(false)
+    }
+  }, [])
 
   React.useEffect(() => {
     getGroups()
-  }, [user])
+  }, [])
 
   const handleGroupNameChange = (event) => {
     if (!event) {
@@ -69,8 +71,9 @@ function HomePage({user}) {
   };
 
 
-  const changeGroupName = () => {
-    dispatch(createGroup({user, group}))
+  const changeGroupName = async () => {
+    await dispatch(createGroup({user, group}))
+    console.log(groups)
     setGroup('')
   };
 
