@@ -137,7 +137,7 @@ function RatePlayer({user}) {
               <Grid item xs={12} justifyContent="center" alignItems="center" container>
                 <Box textAlign="center" padding={5}>
                   <Typography>
-                    Rate the players by press and drag to <br/> their respective rankings for this match day
+                    Rate the players by pressing and then dragging to <br/> their respective rankings for this match day
                   </Typography>
                   <List
                     subheader={<ListSubheader>Players</ListSubheader>}
