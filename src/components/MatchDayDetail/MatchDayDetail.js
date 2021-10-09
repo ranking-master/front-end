@@ -154,7 +154,7 @@ function MatchDayDetail({user}) {
                       <ListItemText
                         primary={member.firstName ? member.lastName ? member.firstName + ' ' + member.lastName : member.firstName : member.email}/>
                       <ListItemSecondaryAction>
-                        <ListItemText primary={member.rating_point}/>
+                        <ListItemText primary={`${member.rating_point} pts`}/>
                       </ListItemSecondaryAction>
                     </ListItem>
                   )}
