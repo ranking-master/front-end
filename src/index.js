@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import * as Sentry from "@sentry/browser";
 import * as serviceWorker from "./serviceWorker";
@@ -16,7 +18,9 @@ Sentry.init({
 });
 ReactDOM.render(
   <Provider store={store}>
-    <App/>
+    <DndProvider backend={HTML5Backend}>
+      <App/>
+    </DndProvider>
   </Provider>
   , document.getElementById("root"));
 serviceWorker.register();

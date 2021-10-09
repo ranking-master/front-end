@@ -2,9 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia,
+  Box, Button, Card, CardActionArea, CardActions, CardContent,
   Divider,
-  Grid, IconButton,
+  Grid,
   List,
   ListItem, ListItemIcon,
   ListItemSecondaryAction,
@@ -18,7 +18,12 @@ import EmptyState from "../EmptyState";
 import Loader from '../Loader'
 
 import { useHistory, useParams } from "react-router-dom";
-import { fetchMatchDayById, fetchMatchMembers } from "../../features/match/matchSlice";
+import {
+  fetchMatchDayById,
+  fetchMatchMembers,
+  expireMatchDay,
+  isMatchDayExpired
+} from "../../features/match/matchSlice";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
@@ -38,11 +43,13 @@ function MatchDayDetail({user}) {
   const theme = useTheme()
   const dispatch = useDispatch()
   const {matchDayId} = useParams()
+  const history = useHistory()
 
   const members = useSelector((state) => state.match.members)
   const [matchDay, setMatchDay] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
   const [showTooltip, setShowTooltip] = React.useState(false)
+  const [isExpired, setIsExpired] = React.useState(true)
 
   const getMatchMembers = React.useCallback(async () => {
     setLoading(true)
@@ -50,8 +57,15 @@ function MatchDayDetail({user}) {
     setLoading(false)
   }, [])
 
+  const isMatchExpired = React.useCallback(async () => {
+    const response = await dispatch(isMatchDayExpired({user, matchDayId}))
+    const output = response.payload?.is_expired
+    setIsExpired(output)
+  }, [])
+
 
   React.useEffect(() => {
+    isMatchExpired();
     getMatchMembers();
   }, [])
 
@@ -64,6 +78,11 @@ function MatchDayDetail({user}) {
   React.useEffect(() => {
     getMatchDay()
   }, [])
+
+  const setMatchDayAsExpired = async () => {
+    await dispatch(expireMatchDay({user, matchDayId}))
+    history.push(`/match-day-detail/${matchDayId}`)
+  }
 
   if (user) {
     if (loading) {
@@ -82,8 +101,8 @@ function MatchDayDetail({user}) {
                       </Typography>
                     </CardContent>
                   </CardActionArea>
-                  <CardActions>
-                    {user.uid === matchDay.uid && <Tooltip title={showTooltip ? 'Copied' : ''}>
+                  {user.uid === matchDay.uid && <CardActions>
+                    <Tooltip title={showTooltip ? 'Copied' : ''}>
                       <Button
                         size="small"
                         color="secondary"
@@ -94,17 +113,15 @@ function MatchDayDetail({user}) {
                       >
                         Share Rate Link
                       </Button>
-                    </Tooltip>}
-                    <Button
+                    </Tooltip>
+                    {!isExpired && <Button
                       size="small"
                       color="primary"
-                      onClick={() => {
-                        // history.push(`/match-day/${groupId}`)
-                      }}
+                      onClick={setMatchDayAsExpired}
                     >
-                      Create match
-                    </Button>
-                  </CardActions>
+                      Close Rating
+                    </Button>}
+                  </CardActions>}
                 </Card>
               </Box>
 

@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { fetchMembers } from "../../features/member/memberSlice";
 import EmptyState from "../EmptyState";
 import Loader from "../Loader";
@@ -63,6 +63,7 @@ function MatchDay({user}) {
   const classes = useStyles();
   const dispatch = useDispatch()
   const {groupId} = useParams()
+  const history = useHistory()
   const [loading, setLoading] = React.useState(true)
 
   const [checked, setChecked] = React.useState([]);
@@ -132,6 +133,7 @@ function MatchDay({user}) {
   const createMatchDay = () => {
     dispatch(createMatch({user, groupId, matchName, userIds: right.map(item => item.id)}))
     setMatchName('')
+    history.push(`/group/${groupId}`)
   }
 
   const customList = (title, items) => (

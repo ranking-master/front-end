@@ -69,6 +69,54 @@ export const fetchMatchDayById = createAsyncThunk('group/fetchMatchDayById', asy
   return response.data.data
 })
 
+export const isMemberInMatchDay = createAsyncThunk('group/isMemberInMatchDay', async ({user, uuid}) => {
+  const response = await axios.get(`${API}/groups/isMemberInMatchDay/${uuid}`, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-type": "Application/json",
+      "Authorization": `Bearer ${user.idToken}`
+    }
+  })
+
+  return response.data.data
+})
+
+export const submitRate = createAsyncThunk('group/submitRate', async ({user, matchDayId, userIds}) => {
+  const response = await axios.post(`${API}/groups/addRating/${matchDayId}`, {user_id: userIds}, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-type": "Application/json",
+      "Authorization": `Bearer ${user.idToken}`
+    }
+  })
+
+  return response.data.data
+})
+
+export const expireMatchDay = createAsyncThunk('group/expireMatchDay', async ({user, matchDayId}) => {
+  const response = await axios.put(`${API}/groups/closeRating/${matchDayId}`, {}, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-type": "Application/json",
+      "Authorization": `Bearer ${user.idToken}`
+    }
+  })
+
+  return response.data.data
+})
+
+export const isMatchDayExpired = createAsyncThunk('group/isMatchDayExpired', async ({user, matchDayId}) => {
+  const response = await axios.get(`${API}/groups/checkRatingExpired/${matchDayId}`, {}, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-type": "Application/json",
+      "Authorization": `Bearer ${user.idToken}`
+    }
+  })
+
+  return response.data.data
+})
+
 export const matchSlice = createSlice({
   name: 'match',
   initialState,
