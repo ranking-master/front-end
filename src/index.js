@@ -19,7 +19,7 @@ Sentry.init({
 });
 ReactDOM.render(
   <Provider store={store}>
-    <DndProvider backend={TouchBackend}>
+    <DndProvider backend={TouchBackend} options={{enableTouchEvents: true, enableMouseEvents: true}}>
       <App/>
     </DndProvider>
   </Provider>
