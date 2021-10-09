@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { TouchBackend } from 'react-dnd-touch-backend'
 
 import * as Sentry from "@sentry/browser";
 import * as serviceWorker from "./serviceWorker";
@@ -18,7 +19,7 @@ Sentry.init({
 });
 ReactDOM.render(
   <Provider store={store}>
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={TouchBackend}>
       <App/>
     </DndProvider>
   </Provider>
