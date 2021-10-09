@@ -10,6 +10,9 @@ import UserPage from "../UserPage";
 import NotFoundPage from "../NotFoundPage";
 import GroupDetail from "../GroupDetail";
 import JoinGroup from "../JoinGroup";
+import MatchDay from "../MatchDay";
+import MatchDayDetail from "../MatchDayDetail";
+import RatePlayer from "../RatePlayer";
 
 class Router extends Component {
   render() {
@@ -46,6 +49,18 @@ class Router extends Component {
 
           <Route path="/join/:uuid/:groupId">
             <JoinGroup user={user}/>
+          </Route>
+
+          <Route path="/match-day/:groupId">
+            <MatchDay user={user}/>
+          </Route>
+
+          <Route path="/match-day-detail/:matchDayId">
+            <MatchDayDetail user={user}/>
+          </Route>
+
+          <Route path="/rate/:uuid/:matchDayId">
+            <RatePlayer user={user}/>
           </Route>
 
           <Route>

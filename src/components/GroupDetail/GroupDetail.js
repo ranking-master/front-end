@@ -9,7 +9,7 @@ import {
   List,
   ListItem, ListItemIcon,
   ListItemSecondaryAction,
-  ListItemText,
+  ListItemText, ListSubheader,
   TextField, Tooltip, Typography
 } from "@material-ui/core";
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -20,15 +20,21 @@ import Loader from '../Loader'
 import { fetchGroupById, updateGroup } from "../../features/group/groupSlice";
 import { fetchMembers } from "../../features/member/memberSlice";
 
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
+import { fetchMatches } from "../../features/match/matchSlice";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
     width: '100%',
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
+    margin: '5px'
   },
-  cardRoot: {width: '100%',}, media: {height: 250}
+  cardRoot: {width: '100%',}, media: {height: 250},
+  listContainer: {
+    margin: '5px'
+  }
 }));
 
 function GroupDetail({user}) {
@@ -36,8 +42,10 @@ function GroupDetail({user}) {
   const theme = useTheme()
   const dispatch = useDispatch()
   const {groupId} = useParams()
+  const history = useHistory()
 
   const members = useSelector((state) => state.member.members)
+  const matches = useSelector((state) => state.match.matches)
   const [group, setGroup] = React.useState(null)
   const [image, setImage] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
@@ -45,12 +53,20 @@ function GroupDetail({user}) {
   const [downloadUrl, setDownloadUrl] = React.useState(null)
 
   const getMembers = React.useCallback(async () => {
+    setLoading(true)
     await dispatch(fetchMembers({user, groupId}))
+    setLoading(false)
+  }, [])
+
+  const getMatches = React.useCallback(async () => {
+    setLoading(true)
+    await dispatch(fetchMatches({user, groupId}))
     setLoading(false)
   }, [])
 
   React.useEffect(() => {
     getMembers();
+    getMatches();
   }, [])
 
   const handleChange = (e) => {
@@ -147,7 +163,7 @@ function GroupDetail({user}) {
                     </CardContent>
                   </CardActionArea>
                   <CardActions>
-                    <Tooltip title={showTooltip ? 'Copied' : null}>
+                    <Tooltip title={showTooltip ? 'Copied' : ''}>
                       <Button
                         size="small"
                         color="secondary"
@@ -159,6 +175,15 @@ function GroupDetail({user}) {
                         Share Group Link
                       </Button>
                     </Tooltip>
+                    {group.uid === user.uid && <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        history.push(`/match-day/${groupId}`)
+                      }}
+                    >
+                      Create match
+                    </Button>}
                   </CardActions>
                 </Card>
               </Box>
@@ -170,11 +195,13 @@ function GroupDetail({user}) {
             <Grid
               item xs={12}
               container direction="row"
-              justifyContent="center"
+              justifyContent="space-evenly"
               alignItems="center"
             >
-              {members.length !== 0 && <div className={classes.listRoot}>
-                <List component="nav" aria-label="secondary mailbox folder">
+              {members.length !== 0 &&
+              <div className={classes.listRoot}>
+                <List subheader={<ListSubheader>Members</ListSubheader>} component="nav"
+                      aria-label="secondary mailbox folder">
                   {members.map((member, index) =>
                     <ListItem
                       key={index}
@@ -198,6 +225,28 @@ function GroupDetail({user}) {
                   )}
                 </List>
               </div>}
+              {matches.length !== 0 &&
+              <div className={classes.listRoot}>
+                <List subheader={<ListSubheader>Matches</ListSubheader>} component="nav"
+                      aria-label="secondary mailbox folder">
+                  {matches.map((match, index) =>
+                    <ListItem
+                      key={index}
+                    >
+                      <ListItemText
+                        primary={match.name}/>
+                      <ListItemSecondaryAction>
+                        <IconButton edge="end" aria-label="go" onClick={() => {
+                          history.push(`/match-day-detail/${match.id}`)
+                        }}>
+                          <NavigateNextIcon/>
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )}
+                </List>
+              </div>}
+              <Grid/>
             </Grid>
           </Grid>
         </div>
