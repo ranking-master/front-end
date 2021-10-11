@@ -3,11 +3,8 @@ import PropTypes from "prop-types";
 import { useDispatch } from 'react-redux'
 import {
   Box, Button,
-  Grid, List, ListSubheader, Typography,
+  Grid, List, ListItem, ListItemIcon, ListItemText, ListSubheader, Typography,
 } from "@material-ui/core";
-import update from 'immutability-helper';
-
-import RatePlayerList from '../RatePlayerList';
 
 import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
 import EmptyState from "../EmptyState";
@@ -23,6 +20,7 @@ import {
 import Loader from "../Loader";
 import UnAuthenticated from "../UnAuthenticated";
 import { formatName } from "../../data/formatName";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,14 +31,48 @@ const useStyles = makeStyles((theme) => ({
   },
   listContainerStyle: {
     width: 400
+  },
+  listStyle: {
+    padding: '0.5rem 1rem',
+    marginBottom: '.5rem',
+    backgroundColor: theme.palette.primary.light,
+    cursor: 'move',
+  },
+  buttonHoverCursor: {
+    cursor: 'move'
   }
 }));
+
+// a little function to help us with reordering the result
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
 
 function RatePlayer({user}) {
   const classes = useStyles();
   const dispatch = useDispatch()
   let history = useHistory();
   const {uuid, matchDayId} = useParams()
+
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const newMembers = reorder(
+      members,
+      result.source.index,
+      result.destination.index
+    );
+
+    setMembers(newMembers)
+  }
 
   const [loading, setLoading] = React.useState(true)
   const [isAllowed, setIsAllowed] = React.useState(false)
@@ -78,28 +110,6 @@ function RatePlayer({user}) {
     getMatchDay()
   }, [thankYou])
 
-  const moveCard = React.useCallback((dragIndex, hoverIndex) => {
-    const dragCard = members[dragIndex];
-    setMembers(update(members, {
-      $splice: [
-        [dragIndex, 1],
-        [hoverIndex, 0, dragCard],
-      ],
-    }));
-  }, [members]);
-
-  const renderCard = (member, index) => {
-    return (
-      <RatePlayerList
-        key={index + 'member.id'}
-        index={index}
-        id={member.id}
-        text={formatName(member)}
-        moveCard={moveCard}
-      />
-    );
-  };
-
   const submitRating = async () => {
     await dispatch(submitRate({user, matchDayId, userIds: members.map(member => member.id)}))
     setThankYou(true)
@@ -133,26 +143,52 @@ function RatePlayer({user}) {
 
         return (
           <div style={{flexGrow: 1}}>
-            <Grid container spacing={3} justifyContent="center" alignItems="center">
+            <Grid container spacing={3} justifyContent="center" alignItems="center" xs={12}>
               <Grid item xs={12} justifyContent="center" alignItems="center" container>
                 <Box textAlign="center" padding={5}>
-                  <Typography>
+                  <Typography variant="h6" gutterBottom>
                     Rate the players by pressing and then dragging to <br/> their respective rankings for this match day
                   </Typography>
-                  <List
-                    subheader={<ListSubheader>Players</ListSubheader>}
-                    component="nav"
-                    aria-label="secondary mailbox folder"
-                    className={classes.listContainerStyle}
-                  >
-                    {members.map((member, i) => renderCard(member, i))}
-                  </List>
+                  {members && <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="droppable">
+                      {(provided, snapshot) => (
+                        <List
+                          subheader={<ListSubheader>Players</ListSubheader>}
+                          component="nav"
+                          classes={classes.listContainerStyle}
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                        >
+                          {members.map((item, index) => (
+                            <Draggable key={item.id} draggableId={item.id} index={index}>
+                              {(provided, snapshot) => (
+                                <ListItem
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={classes.listStyle}
+                                >
+                                  <ListItemIcon>
+                                    <ListItemText primary={index + 1}/>
+                                  </ListItemIcon>
+                                  <ListItemText primary={formatName(item)}/>
+                                </ListItem>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </List>
+                      )}
+                    </Droppable>
+                  </DragDropContext>}
+
+
                   <Button
                     size="small"
                     color="primary"
                     onClick={submitRating}
                   >
-                    Rate Players
+                    Submit Rating
                   </Button>
                 </Box>
               </Grid>

@@ -8,13 +8,11 @@ import {
   List,
   ListItem, ListItemIcon,
   ListItemSecondaryAction,
-  ListItemText, ListSubheader,
+  ListItemText, ListSubheader, Menu, MenuItem,
   Tooltip, Typography
 } from "@material-ui/core";
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import { ReactComponent as InsertBlockIllustration } from "../../illustrations/insert-block.svg";
-import EmptyState from "../EmptyState";
 import Loader from '../Loader'
 
 import { useHistory, useParams } from "react-router-dom";
@@ -26,6 +24,14 @@ import {
 } from "../../features/match/matchSlice";
 import UnAuthenticated from "../UnAuthenticated";
 import { formatName } from "../../data/formatName";
+import {
+  TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton
+} from "react-share";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
@@ -52,6 +58,16 @@ function MatchDayDetail({user}) {
   const [loading, setLoading] = React.useState(true)
   const [showTooltip, setShowTooltip] = React.useState(false)
   const [isExpired, setIsExpired] = React.useState(true)
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
 
   const getMatchMembers = React.useCallback(async () => {
     setLoading(true)
@@ -92,7 +108,7 @@ function MatchDayDetail({user}) {
     } else {
       return (
         <div style={{flexGrow: 1}}>
-          {matchDay && <Grid container spacing={3}>
+          {matchDay && <Grid container spacing={3} xs={12}>
             <Grid item xs={12}>
               <Box padding={5}>
                 <Card className={classes.cardRoot}>
@@ -105,18 +121,49 @@ function MatchDayDetail({user}) {
                   </CardActionArea>
                   {(user.uid === matchDay.uid ? !isExpired : false) &&
                   <CardActions>
-                    <Tooltip title={showTooltip ? 'Copied' : ''}>
-                      <Button
-                        size="small"
-                        color="secondary"
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`)
-                          setShowTooltip(true)
-                        }}
-                      >
-                        Share Rate Link
-                      </Button>
-                    </Tooltip>
+                    <Button
+                      size="small"
+                      color="secondary"
+                      aria-controls="share-menu"
+                      aria-haspopup="true"
+                      onClick={handleClick}
+                    >
+                      Share Rating Link
+                    </Button>
+                    <Menu
+                      id="simple-menu"
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl)}
+                      onClose={handleClose}
+                    >
+                      <MenuItem onClick={handleClose}>
+                        <WhatsappShareButton
+                          url={`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`}>
+                          <WhatsappIcon size={50} round={true}/>
+                        </WhatsappShareButton>
+                      </MenuItem>
+                      {/*<MenuItem onClick={handleClose}>*/}
+                      {/*  <FacebookShareButton url={`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`}>*/}
+                      {/*    <FacebookIcon size={50} round={true}/>*/}
+                      {/*  </FacebookShareButton>*/}
+                      {/*</MenuItem>*/}
+                      <MenuItem onClick={handleClose}>
+                        <TwitterShareButton
+                          url={`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`}>
+                          <TwitterIcon size={50} round={true}/>
+                        </TwitterShareButton>
+                      </MenuItem>
+                      <MenuItem onClick={handleClose}>
+                        <TelegramShareButton
+                          url={`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`}>
+                          <TelegramIcon size={50} round={true}/>
+                        </TelegramShareButton>
+                      </MenuItem>
+                      <MenuItem>
+                        {`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`}
+                      </MenuItem>
+                    </Menu>
                     <Button
                       size="small"
                       color="primary"

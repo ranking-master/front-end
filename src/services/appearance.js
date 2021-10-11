@@ -228,6 +228,16 @@ appearance.createTheme = (theme) => {
     dark: dark,
   });
 
+  theme.typography.h6 = {
+    fontSize: '.7rem',
+    '@media (min-width:600px)': {
+      fontSize: '1rem',
+    },
+    [theme.breakpoints.up('md')]: {
+      fontSize: '1.3rem',
+    },
+  };
+
   return theme;
 };
 

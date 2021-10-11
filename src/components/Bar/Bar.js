@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 
 import { Link as RouterLink } from "react-router-dom";
 
+import HomeIcon from '@material-ui/icons/Home';
+
 import {
   AppBar,
   Toolbar,
@@ -64,7 +66,7 @@ class Bar extends Component {
     const {menu} = this.state;
 
     const menuItems = [
-      
+
       {
         name: "Profile",
         to: user ? `/user/${user.uid}` : null,
@@ -91,7 +93,7 @@ class Bar extends Component {
                 to="/"
                 underline="none"
               >
-                {process.env.REACT_APP_TITLE}
+                <HomeIcon/>
               </Link>
             </Typography>
           </Box>

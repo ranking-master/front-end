@@ -51,11 +51,9 @@ function HomePage({user}) {
 
   const getGroups = React.useCallback(async () => {
     if (user) {
-      console.log('HERE')
       await dispatch(fetchGroups({user}))
       setLoading(false)
     }
-    console.log('OUTSIDE HERE')
   }, [user])
 
   React.useEffect(() => {
@@ -75,7 +73,6 @@ function HomePage({user}) {
 
   const changeGroupName = async () => {
     await dispatch(createGroup({user, group}))
-    console.log(groups)
     setGroup('')
   };
 
@@ -178,7 +175,7 @@ function HomePage({user}) {
     } else {
       return (
         <div style={{flexGrow: 1}}>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} xs={12}>
             <Grid item xs={12}>
               <Box textAlign="center" padding={5}>
                 <TextField

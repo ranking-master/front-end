@@ -3,15 +3,25 @@ import PropTypes from "prop-types";
 import { useSelector, useDispatch } from 'react-redux'
 import firebase, { auth, storage } from "../../firebase";
 import {
+  AppBar,
   Box, Button, Card, CardActionArea, CardActions, CardContent,
   Divider,
   Grid, IconButton,
   List,
   ListItem, ListItemIcon,
   ListItemSecondaryAction,
-  ListItemText, ListSubheader,
+  ListItemText, ListSubheader, Menu, MenuItem, Tab, Tabs,
   Tooltip, Typography
 } from "@material-ui/core";
+import {
+  WhatsappShareButton,
+  WhatsappIcon,
+  FacebookIcon,
+  FacebookShareButton,
+  TwitterShareButton,
+  TwitterIcon, TelegramShareButton, TelegramIcon
+} from "react-share";
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import Loader from '../Loader'
@@ -34,8 +44,48 @@ const useStyles = makeStyles((theme) => ({
   cardRoot: {width: '100%',}, media: {height: 250},
   listContainer: {
     margin: '5px'
+  },
+  appBar: {
+    width: '100%'
+  },
+  appBarContainer: {
+    width: '100%'
   }
 }));
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+function TabPanel(props) {
+  const {children, value, index, ...other} = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Grid container>
+          <Grid
+            item xs={12}
+            container direction="row"
+            justifyContent="space-evenly"
+            alignItems="flex-start"
+          >
+            {children}
+          </Grid>
+        </Grid>
+      )}
+    </div>
+  );
+}
 
 function GroupDetail({user}) {
   const classes = useStyles();
@@ -51,6 +101,20 @@ function GroupDetail({user}) {
   const [loading, setLoading] = React.useState(true)
   const [showTooltip, setShowTooltip] = React.useState(false)
   const [downloadUrl, setDownloadUrl] = React.useState(null)
+  const [value, setValue] = React.useState(0);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const getMembers = React.useCallback(async () => {
     setLoading(true)
@@ -115,7 +179,8 @@ function GroupDetail({user}) {
     } else {
       return (
         <div style={{flexGrow: 1}}>
-          {group && <Grid container spacing={3}>
+          {group &&
+          <Grid container spacing={3} xs={12}>
             <Grid item xs={12}>
               <Box padding={5}>
                 <Card className={classes.cardRoot}>
@@ -163,18 +228,45 @@ function GroupDetail({user}) {
                     </CardContent>
                   </CardActionArea>
                   <CardActions>
-                    <Tooltip title={showTooltip ? 'Copied' : ''}>
+                    <>
                       <Button
                         size="small"
                         color="secondary"
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`)
-                          setShowTooltip(true)
-                        }}
+                        aria-controls="share-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
                       >
                         Share Group Link
                       </Button>
-                    </Tooltip>
+                      <Menu
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                      >
+                        <MenuItem onClick={handleClose}>
+                          <WhatsappShareButton url={`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`}>
+                            <WhatsappIcon size={50} round={true}/>
+                          </WhatsappShareButton>
+                        </MenuItem>
+                        {/*<MenuItem onClick={handleClose}>*/}
+                        {/*  <FacebookShareButton url={`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`}>*/}
+                        {/*    <FacebookIcon size={50} round={true}/>*/}
+                        {/*  </FacebookShareButton>*/}
+                        {/*</MenuItem>*/}
+                        <MenuItem onClick={handleClose}>
+                          <TwitterShareButton url={`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`}>
+                            <TwitterIcon size={50} round={true}/>
+                          </TwitterShareButton>
+                        </MenuItem>
+                        <MenuItem onClick={handleClose}>
+                          <TelegramShareButton url={`${process.env.REACT_APP_HOMEPAGE}/join/${group.uuid}/${group.id}`}>
+                            <TelegramIcon size={50} round={true}/>
+                          </TelegramShareButton>
+                        </MenuItem>
+                      </Menu>
+                    </>
                     {group.uid === user.uid && <Button
                       size="small"
                       color="primary"
@@ -187,21 +279,33 @@ function GroupDetail({user}) {
                   </CardActions>
                 </Card>
               </Box>
-
             </Grid>
           </Grid>}
-          <Divider/>
-          <Grid container>
-            <Grid
-              item xs={12}
-              container direction="row"
-              justifyContent="space-evenly"
-              alignItems="flex-start"
-            >
+          <Box p={2}>
+            <Grid container justifyContent="center" alignItems="center" xs={12}>
+              <AppBar position="static" className={classes.appBar}>
+                <Tabs
+                  value={value}
+                  onChange={handleTabChange}
+                  aria-label="Group detail tabs"
+                  variant="fullWidth"
+                  centered
+                >
+                  <Tab label="Members" {...a11yProps(0)} />
+                  <Tab label="Matches" {...a11yProps(1)} />
+                </Tabs>
+              </AppBar>
+            </Grid>
+          </Box>
+          <Box p={2}>
+            <TabPanel value={value} index={0}>
               {members.length !== 0 &&
               <div className={classes.listRoot}>
-                <List subheader={<ListSubheader>Members</ListSubheader>} component="nav"
-                      aria-label="secondary mailbox folder">
+                <List
+                  subheader={<ListSubheader>Members</ListSubheader>}
+                  component="nav"
+                  aria-label="secondary mailbox folder"
+                >
                   {members.map((member, index) =>
                     <ListItem
                       key={index}
@@ -222,10 +326,15 @@ function GroupDetail({user}) {
                   )}
                 </List>
               </div>}
+            </TabPanel>
+            <TabPanel value={value} index={1}>
               {matches.length !== 0 &&
               <div className={classes.listRoot}>
-                <List subheader={<ListSubheader>Matches</ListSubheader>} component="nav"
-                      aria-label="secondary mailbox folder">
+                <List
+                  subheader={<ListSubheader>Matches</ListSubheader>}
+                  component="nav"
+                  aria-label="secondary mailbox folder"
+                >
                   {matches.map((match, index) =>
                     <ListItem
                       key={index}
@@ -243,9 +352,8 @@ function GroupDetail({user}) {
                   )}
                 </List>
               </div>}
-              <Grid/>
-            </Grid>
-          </Grid>
+            </TabPanel>
+          </Box>
         </div>
       );
     }

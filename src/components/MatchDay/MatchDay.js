@@ -190,6 +190,7 @@ function MatchDay({user}) {
             justifyContent="center"
             alignItems="center"
             className={classes.root}
+            xs={12}
           >
             <Grid item>{customList('Players', left)}</Grid>
             <Grid item>
