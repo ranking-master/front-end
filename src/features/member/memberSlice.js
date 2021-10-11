@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API = 'https://rankmaster-backend.herokuapp.com/v1'
+const API = process.env.REACT_APP_BACKEND_API
 
 const initialState = {
   members: [],

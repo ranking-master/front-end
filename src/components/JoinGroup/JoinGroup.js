@@ -21,12 +21,14 @@ function JoinGroup({user}) {
   const [group, setGroup] = React.useState(null)
 
   const fetchGroup = React.useCallback(async () => {
-    const groupResponse = await dispatch(fetchGroupById({user, groupId}))
-    setGroup(groupResponse.payload)
-    setLoading(false)
+    if (user) {
+      const groupResponse = await dispatch(fetchGroupById({user, groupId}))
+      setGroup(groupResponse.payload)
+      setLoading(false)
+    }
   }, [user])
 
-  
+
   React.useEffect(() => {
     fetchGroup()
   }, [user])

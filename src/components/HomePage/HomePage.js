@@ -51,14 +51,16 @@ function HomePage({user}) {
 
   const getGroups = React.useCallback(async () => {
     if (user) {
+      console.log('HERE')
       await dispatch(fetchGroups({user}))
       setLoading(false)
     }
-  }, [])
+    console.log('OUTSIDE HERE')
+  }, [user])
 
   React.useEffect(() => {
     getGroups()
-  }, [])
+  }, [user])
 
   const handleGroupNameChange = (event) => {
     if (!event) {
