@@ -47,7 +47,8 @@ function HomePage({user}) {
 
   React.useEffect(() => {
     signInWithEmailLink(user)
-  }, [])
+    getGroups()
+  }, [user])
 
   const getGroups = React.useCallback(async () => {
     if (user) {
@@ -56,9 +57,9 @@ function HomePage({user}) {
     }
   }, [user])
 
-  React.useEffect(() => {
-    getGroups()
-  }, [user])
+  // React.useEffect(() => {
+  //   getGroups()
+  // }, [user])
 
   const handleGroupNameChange = (event) => {
     if (!event) {

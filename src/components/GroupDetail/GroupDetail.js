@@ -120,18 +120,19 @@ function GroupDetail({user}) {
     setLoading(true)
     await dispatch(fetchMembers({user, groupId}))
     setLoading(false)
-  }, [])
+  }, [user])
 
   const getMatches = React.useCallback(async () => {
     setLoading(true)
     await dispatch(fetchMatches({user, groupId}))
     setLoading(false)
-  }, [])
+  }, [user])
 
   React.useEffect(() => {
     getMembers();
     getMatches();
-  }, [])
+    getGroup()
+  }, [user])
 
   const handleChange = (e) => {
     if (e.target.files[0]) {
@@ -167,11 +168,7 @@ function GroupDetail({user}) {
   const getGroup = React.useCallback(async () => {
     const res = await dispatch(fetchGroupById({user, groupId}))
     setGroup(res.payload)
-  }, [groupId])
-
-  React.useEffect(() => {
-    getGroup()
-  }, [])
+  }, [groupId, user])
 
   if (user) {
     if (loading) {

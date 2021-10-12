@@ -76,11 +76,11 @@ function MatchDay({user}) {
     setLeft(membersState.payload)
     setRight([])
     setLoading(false)
-  }, [])
+  }, [user])
 
   React.useEffect(() => {
     getMembers();
-  }, [])
+  }, [user])
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);

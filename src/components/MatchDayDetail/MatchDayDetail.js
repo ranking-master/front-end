@@ -73,29 +73,26 @@ function MatchDayDetail({user}) {
     setLoading(true)
     await dispatch(fetchMatchMembers({user, matchDayId}))
     setLoading(false)
-  }, [])
+  }, [user])
 
   const isMatchExpired = React.useCallback(async () => {
     const response = await dispatch(isMatchDayExpired({user, matchDayId}))
     const output = response.payload?.is_expired
     setIsExpired(output)
-  }, [])
+  }, [user])
 
 
   React.useEffect(() => {
     isMatchExpired();
     getMatchMembers();
-  }, [])
+    getMatchDay()
+  }, [user])
 
 
   const getMatchDay = React.useCallback(async () => {
     const res = await dispatch(fetchMatchDayById({user, matchDayId}))
     setMatchDay(res.payload)
-  }, [matchDayId])
-
-  React.useEffect(() => {
-    getMatchDay()
-  }, [])
+  }, [matchDayId, user])
 
   const setMatchDayAsExpired = async () => {
     await dispatch(expireMatchDay({user, matchDayId}))
