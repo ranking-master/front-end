@@ -184,8 +184,10 @@ function MatchDay({user}) {
     } else {
       return (
         <div>
+          {left && right &&
           <Grid
             container
+            item
             spacing={2}
             justifyContent="center"
             alignItems="center"
@@ -218,7 +220,7 @@ function MatchDay({user}) {
               </Grid>
             </Grid>
             <Grid item>{customList('Chosen players', right)}</Grid>
-          </Grid>
+          </Grid>}
           <div
             className={classes.submitRoot}
           >

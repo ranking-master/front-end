@@ -177,7 +177,7 @@ function GroupDetail({user}) {
       return (
         <div style={{flexGrow: 1}}>
           {group &&
-          <Grid container spacing={3} xs={12}>
+          <Grid container item spacing={3} xs={12}>
             <Grid item xs={12}>
               <Box padding={5}>
                 <Card className={classes.cardRoot}>
@@ -279,7 +279,7 @@ function GroupDetail({user}) {
             </Grid>
           </Grid>}
           <Box p={2}>
-            <Grid container justifyContent="center" alignItems="center" xs={12}>
+            <Grid container item justifyContent="center" alignItems="center" xs={12}>
               <AppBar position="static" className={classes.appBar}>
                 <Tabs
                   value={value}

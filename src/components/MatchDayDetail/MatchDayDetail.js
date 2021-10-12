@@ -157,9 +157,9 @@ function MatchDayDetail({user}) {
                           <TelegramIcon size={50} round={true}/>
                         </TelegramShareButton>
                       </MenuItem>
-                      <MenuItem>
-                        {`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`}
-                      </MenuItem>
+                      {/*<MenuItem>*/}
+                      {/*  {`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`}*/}
+                      {/*</MenuItem>*/}
                     </Menu>
                     <Button
                       size="small"

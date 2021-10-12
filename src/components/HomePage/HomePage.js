@@ -176,7 +176,7 @@ function HomePage({user}) {
     } else {
       return (
         <div style={{flexGrow: 1}}>
-          <Grid container spacing={3} xs={12}>
+          <Grid container item spacing={3} xs={12}>
             <Grid item xs={12}>
               <Box textAlign="center" padding={5}>
                 <TextField
