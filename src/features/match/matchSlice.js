@@ -69,6 +69,18 @@ export const fetchMatchDayById = createAsyncThunk('group/fetchMatchDayById', asy
   return response.data.data
 })
 
+export const makeMatchDayRateActive = createAsyncThunk('group/makeMatchDayRateActive', async ({user, matchDayId}) => {
+  const response = await axios.put(`${API}/groups/makeRateLinkVisible/${matchDayId}`, {}, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-type": "Application/json",
+      "Authorization": `Bearer ${user.idToken}`
+    }
+  })
+  
+  return response.data.data
+})
+
 export const isMemberInMatchDay = createAsyncThunk('group/isMemberInMatchDay', async ({user, uuid}) => {
   const response = await axios.get(`${API}/groups/isMemberInMatchDay/${uuid}`, {
     headers: {

@@ -20,7 +20,7 @@ import {
   fetchMatchDayById,
   fetchMatchMembers,
   expireMatchDay,
-  isMatchDayExpired
+  isMatchDayExpired, makeMatchDayRateActive
 } from "../../features/match/matchSlice";
 import UnAuthenticated from "../UnAuthenticated";
 import { formatName } from "../../data/formatName";
@@ -64,8 +64,11 @@ function MatchDayDetail({user}) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
     setAnchorEl(null);
+    if (!matchDay?.is_active) {
+      await dispatch(makeMatchDayRateActive({user, matchDayId}))
+    }
   };
 
 
@@ -105,7 +108,7 @@ function MatchDayDetail({user}) {
     } else {
       return (
         <div style={{flexGrow: 1}}>
-          {matchDay && <Grid container spacing={3} xs={12}>
+          {matchDay && <Grid container spacing={3} xs={12} item>
             <Grid item xs={12}>
               <Box padding={5}>
                 <Card className={classes.cardRoot}>
@@ -116,6 +119,17 @@ function MatchDayDetail({user}) {
                       </Typography>
                     </CardContent>
                   </CardActionArea>
+                  {(user.uid !== matchDay.uid) && matchDay?.is_active && <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        history.push(`/rate/${matchDay.uuid}/${matchDay.id}`)
+                      }}
+                    >
+                      Rate players
+                    </Button>
+                  </CardActions>}
                   {(user.uid === matchDay.uid ? !isExpired : false) &&
                   <CardActions>
                     <Button
@@ -157,9 +171,6 @@ function MatchDayDetail({user}) {
                           <TelegramIcon size={50} round={true}/>
                         </TelegramShareButton>
                       </MenuItem>
-                      {/*<MenuItem>*/}
-                      {/*  {`${process.env.REACT_APP_HOMEPAGE}/rate/${matchDay.uuid}/${matchDay.id}`}*/}
-                      {/*</MenuItem>*/}
                     </Menu>
                     <Button
                       size="small"
