@@ -93,7 +93,9 @@ class Bar extends Component {
                 to="/"
                 underline="none"
               >
-                <HomeIcon/>
+                <IconButton color="secondary">
+                  <HomeIcon/>
+                </IconButton>
               </Link>
             </Typography>
           </Box>
