@@ -56,7 +56,6 @@ function MatchDayDetail({user}) {
   const members = useSelector((state) => state.match.members)
   const [matchDay, setMatchDay] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
-  const [showTooltip, setShowTooltip] = React.useState(false)
   const [isExpired, setIsExpired] = React.useState(true)
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -210,7 +209,10 @@ function MatchDayDetail({user}) {
                       <ListItemText
                         primary={formatName(member)}/>
                       <ListItemSecondaryAction>
-                        <ListItemText primary={`${member.rating_point} pts`}/>
+                        <ListItemText
+                          primary={`${member.rating_point} pts`}
+                          primaryTypographyProps={{style: {color: member?.is_rated ? 'primary' : 'secondary'}}}
+                        />
                       </ListItemSecondaryAction>
                     </ListItem>
                   )}
