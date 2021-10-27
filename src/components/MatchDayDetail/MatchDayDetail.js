@@ -239,30 +239,6 @@ function MatchDayDetail({user}) {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {/*<List subheader={<ListSubheader>Members</ListSubheader>} component="nav"*/}
-                {/*      aria-label="secondary mailbox folder">*/}
-                {/*  {members.map((member, index) =>*/}
-                {/*    <ListItem*/}
-                {/*      key={index}*/}
-                {/*      style={{*/}
-                {/*        background: member.admin ? theme.palette.primary.main : null*/}
-                {/*      }}*/}
-                {/*    >*/}
-                {/*      <ListItemIcon>*/}
-                {/*        <ListItemText primary={index + 1}/>*/}
-                {/*      </ListItemIcon>*/}
-                {/*      <ListItemText*/}
-                {/*        primary={formatName(member)}/>*/}
-                {/*      <ListItemSecondaryAction>*/}
-                {/*        <ListItemText*/}
-                {/*          primary={`${member.rating_point} pts`}*/}
-                {/*          primaryTypographyProps={{style: {color: member?.is_rated ? 'primary' : 'secondary'}}}*/}
-                {/*          secondary='Hello'*/}
-                {/*        />*/}
-                {/*      </ListItemSecondaryAction>*/}
-                {/*    </ListItem>*/}
-                {/*  )}*/}
-                {/*</List>*/}
               </div>}
               <Grid/>
             </Grid>
