@@ -42,6 +42,21 @@ export const fetchMatches = createAsyncThunk(
   }
 )
 
+export const fetchFinishedMatches = createAsyncThunk(
+  'group/fetchFinishedMatches',
+  async ({user, groupId}) => {
+    const response = await axios.get(`${API}/groups/getAllPreviousMatchDays/${groupId}`, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-type": "Application/json",
+        "Authorization": `Bearer ${user.idToken}`
+      }
+    })
+
+    return response.data.data
+  }
+)
+
 export const fetchMatchMembers = createAsyncThunk(
   'member/fetchMatchMembers',
   async ({user, matchDayId}) => {
@@ -53,6 +68,21 @@ export const fetchMatchMembers = createAsyncThunk(
       }
     })
 
+    return response.data.data
+  }
+)
+
+export const fetchPreviousMatchMembers = createAsyncThunk(
+  'member/fetchPreviousMatchMembers',
+  async ({user, matchDayId}) => {
+    const response = await axios.get(`${API}/groups/listMembersInPreviousMatchDay/${matchDayId}`, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-type": "Application/json",
+        "Authorization": `Bearer ${user.idToken}`
+      }
+    })
+    
     return response.data.data
   }
 )
@@ -77,7 +107,7 @@ export const makeMatchDayRateActive = createAsyncThunk('group/makeMatchDayRateAc
       "Authorization": `Bearer ${user.idToken}`
     }
   })
-  
+
   return response.data.data
 })
 
@@ -152,6 +182,9 @@ export const matchSlice = createSlice({
       state.matches = action.payload
     })
     builder.addCase(fetchMatchMembers.fulfilled, (state, action) => {
+      state.members = action.payload
+    })
+    builder.addCase(fetchPreviousMatchMembers.fulfilled, (state, action) => {
       state.members = action.payload
     })
   }
