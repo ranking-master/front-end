@@ -12,6 +12,7 @@ import {
   Tooltip, Typography
 } from "@material-ui/core";
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import DoneIcon from '@material-ui/icons/Done';
 
 import Loader from '../Loader'
 
@@ -267,7 +268,7 @@ function MatchDayDetail({user}) {
                       <ListItemSecondaryAction>
                         <ListItemText
                           primary={`${member.rating_point} pts`}
-                          primaryTypographyProps={{style: {color: member?.is_rated ? 'primary' : 'secondary'}}}
+                          secondary={member?.is_rated ? <DoneIcon fontSize="small"/> : null}
                         />
                       </ListItemSecondaryAction>
                     </ListItem>

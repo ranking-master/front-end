@@ -326,9 +326,7 @@ function GroupDetail({user}) {
                     <ListItem
                       key={index}
                       button
-                      style={{
-                        fontWeight: member.admin ? 'bold' : 'normal'
-                      }}
+
                     >
                       <ListItemIcon>
                         <ListItemText primary={index + 1}/>
@@ -336,7 +334,8 @@ function GroupDetail({user}) {
                       <ListItemText
                         primary={formatName(member)}/>
                       <ListItemSecondaryAction>
-                        <ListItemText primary={`${member.rating_point} pts`}/>
+                        <ListItemText primary={`${member.rating_point} pts`}
+                                      secondary={member?.admin ? 'Admin' : null}/>
                       </ListItemSecondaryAction>
                     </ListItem>
                   )}
