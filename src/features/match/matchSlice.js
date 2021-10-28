@@ -9,6 +9,21 @@ const initialState = {
   members: []
 }
 
+export const isAdminUserOnMatchDay = createAsyncThunk(
+  'member/isAdminUserOnMatchDay',
+  async ({user, matchDayId}) => {
+    const response = await axios.get(`${API}/matchDays/checkIsAdmin/${matchDayId}`, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-type": "Application/json",
+        "Authorization": `Bearer ${user.idToken}`
+      }
+    })
+
+    return response.data.data
+  }
+)
+
 export const createMatch = createAsyncThunk(
   'group/createMatch',
   async ({user, groupId, matchName, userIds}) => {

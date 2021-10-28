@@ -32,12 +32,12 @@ import {
   WhatsappIcon,
   WhatsappShareButton
 } from "react-share";
-import { isAdminUser } from "../../features/member/memberSlice";
+import { isAdminUserOnMatchDay } from "../../features/match/matchSlice";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
     width: '100%',
-    maxWidth: '100%',
+    maxWidth: '80%',
     backgroundColor: theme.palette.background.paper,
     margin: '5px'
   },
@@ -65,6 +65,7 @@ function MatchDayDetail({user}) {
   const [loading, setLoading] = React.useState(true)
   const [isExpired, setIsExpired] = React.useState(true)
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [isAdmin, setIsAdmin] = React.useState(false)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -79,7 +80,8 @@ function MatchDayDetail({user}) {
 
   const checkIsAdmin = React.useCallback(async () => {
     setLoading(true)
-    await dispatch(isAdminUser({user, groupId}))
+    const response = await dispatch(isAdminUserOnMatchDay({user, matchDayId}))
+    setIsAdmin(response.payload.is_group_admin)
     setLoading(false)
   }, [user])
 
@@ -188,13 +190,13 @@ function MatchDayDetail({user}) {
                         </TelegramShareButton>
                       </MenuItem>
                     </Menu>
-                    <Button
+                    {isAdmin && <Button
                       size="small"
                       color="primary"
                       onClick={setMatchDayAsExpired}
                     >
                       Close Rating
-                    </Button>
+                    </Button>}
                   </CardActions>}
                 </Card>
               </Box>
@@ -211,7 +213,7 @@ function MatchDayDetail({user}) {
             >
               {members.length !== 0 &&
               <div className={classes.listRoot}>
-                <TableContainer component={Paper}>
+                {query.get('isPrevious') === 'true' && <TableContainer component={Paper}>
                   <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                       <TableRow>
@@ -246,7 +248,30 @@ function MatchDayDetail({user}) {
                       )}
                     </TableBody>
                   </Table>
-                </TableContainer>
+                </TableContainer>}
+                {query.get('isPrevious') === 'false' && <List subheader={<ListSubheader>Members</ListSubheader>} component="nav"
+                       aria-label="secondary mailbox folder">
+                  {members.map((member, index) =>
+                    <ListItem
+                      key={index}
+                      style={{
+                        background: member.admin ? theme.palette.primary.main : null
+                      }}
+                    >
+                      <ListItemIcon>
+                        <ListItemText primary={index + 1}/>
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={formatName(member)}/>
+                      <ListItemSecondaryAction>
+                        <ListItemText
+                          primary={`${member.rating_point} pts`}
+                          primaryTypographyProps={{style: {color: member?.is_rated ? 'primary' : 'secondary'}}}
+                        />
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )}
+                </List>}
               </div>}
               <Grid/>
             </Grid>

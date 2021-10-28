@@ -23,21 +23,6 @@ export const fetchMembers = createAsyncThunk(
   }
 )
 
-export const isAdminUser = createAsyncThunk(
-  'member/isAdminUser',
-  async ({user, groupId}) => {
-    const response = await axios.get(`${API}/groups/checkIsAdmin/${groupId}`, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-type": "Application/json",
-        "Authorization": `Bearer ${user.idToken}`
-      }
-    })
-
-    return response.data.data
-  }
-)
-
 
 export const memberSlice = createSlice({
   name: 'member',

@@ -8,6 +8,21 @@ const initialState = {
   groups: [],
 }
 
+export const isAdminUserGroup = createAsyncThunk(
+  'member/isAdminUserGroup',
+  async ({user, groupId}) => {
+    const response = await axios.get(`${API}/groups/checkIsAdmin/${groupId}`, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-type": "Application/json",
+        "Authorization": `Bearer ${user.idToken}`
+      }
+    })
+
+    return response.data.data
+  }
+)
+
 export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
   async ({user}) => {

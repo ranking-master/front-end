@@ -25,7 +25,7 @@ import {
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import Loader from '../Loader'
-import { fetchGroupById, updateGroup } from "../../features/group/groupSlice";
+import { fetchGroupById, isAdminUserGroup, updateGroup } from "../../features/group/groupSlice";
 import { fetchMembers } from "../../features/member/memberSlice";
 
 import { useHistory, useParams } from "react-router-dom";
@@ -103,7 +103,8 @@ function GroupDetail({user}) {
   const [showTooltip, setShowTooltip] = React.useState(false)
   const [downloadUrl, setDownloadUrl] = React.useState(null)
   const [value, setValue] = React.useState(0);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [isAdmin, setIsAdmin] = React.useState(false)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -116,6 +117,13 @@ function GroupDetail({user}) {
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const checkIsAdmin = React.useCallback(async () => {
+    setLoading(true)
+    const response = await dispatch(isAdminUserGroup({user, groupId}))
+    setIsAdmin(response.payload.is_group_admin)
+    setLoading(false)
+  }, [user])
 
   const getMembers = React.useCallback(async () => {
     setLoading(true)
@@ -273,7 +281,7 @@ function GroupDetail({user}) {
                         </MenuItem>
                       </Menu>
                     </>
-                    {group.uid === user.uid && <Button
+                    {isAdmin && <Button
                       size="small"
                       color="primary"
                       onClick={() => {
