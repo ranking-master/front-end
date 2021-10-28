@@ -145,6 +145,7 @@ function GroupDetail({user}) {
   }, [user])
 
   React.useEffect(() => {
+    checkIsAdmin();
     getMembers();
     getMatches();
     getFinishedMatches();
@@ -326,7 +327,7 @@ function GroupDetail({user}) {
                       key={index}
                       button
                       style={{
-                        background: member.admin ? theme.palette.primary.main : null
+                        fontWeight: member.admin ? 'bold' : 'normal'
                       }}
                     >
                       <ListItemIcon>
@@ -366,6 +367,9 @@ function GroupDetail({user}) {
                     </ListItem>
                   )}
                 </List>
+              </div>}
+              {matches.length === 0 && <div className={classes.listRoot}>
+                <p>No upcoming matches</p>
               </div>}
             </TabPanel>
             <TabPanel value={value} index={2}>

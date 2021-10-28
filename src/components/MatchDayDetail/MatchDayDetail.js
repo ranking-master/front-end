@@ -148,7 +148,7 @@ function MatchDayDetail({user}) {
                       Rate players
                     </Button>
                   </CardActions>}
-                  {(user.uid === matchDay.uid ? !isExpired : false) &&
+                  {(isAdmin ? !isExpired : false) &&
                   <CardActions>
                     <Button
                       size="small"
@@ -249,8 +249,9 @@ function MatchDayDetail({user}) {
                     </TableBody>
                   </Table>
                 </TableContainer>}
-                {query.get('isPrevious') === 'false' && <List subheader={<ListSubheader>Members</ListSubheader>} component="nav"
-                       aria-label="secondary mailbox folder">
+                {query.get('isPrevious') === 'false' &&
+                <List subheader={<ListSubheader>Members</ListSubheader>} component="nav"
+                      aria-label="secondary mailbox folder">
                   {members.map((member, index) =>
                     <ListItem
                       key={index}
