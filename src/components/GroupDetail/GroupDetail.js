@@ -29,7 +29,7 @@ import { fetchGroupById, updateGroup } from "../../features/group/groupSlice";
 import { fetchMembers } from "../../features/member/memberSlice";
 
 import { useHistory, useParams } from "react-router-dom";
-import { fetchMatches } from "../../features/match/matchSlice";
+import { fetchMatches, fetchFinishedMatches } from "../../features/match/matchSlice";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import UnAuthenticated from "../UnAuthenticated";
 import { formatName } from "../../data/formatName";
@@ -97,6 +97,7 @@ function GroupDetail({user}) {
   const members = useSelector((state) => state.member.members)
   const matches = useSelector((state) => state.match.matches)
   const [group, setGroup] = React.useState(null)
+  const [previousMatches, setPreviousMatches] = React.useState([])
   const [image, setImage] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
   const [showTooltip, setShowTooltip] = React.useState(false)
@@ -128,10 +129,18 @@ function GroupDetail({user}) {
     setLoading(false)
   }, [user])
 
+  const getFinishedMatches = React.useCallback(async () => {
+    setLoading(true)
+    const res = await dispatch(fetchFinishedMatches({user, groupId}))
+    setPreviousMatches(res.payload)
+    setLoading(false)
+  }, [user])
+
   React.useEffect(() => {
     getMembers();
     getMatches();
-    getGroup()
+    getFinishedMatches();
+    getGroup();
   }, [user])
 
   const handleChange = (e) => {
@@ -289,7 +298,8 @@ function GroupDetail({user}) {
                   centered
                 >
                   <Tab label="Members" {...a11yProps(0)} />
-                  <Tab label="Matches" {...a11yProps(1)} />
+                  <Tab label="Upcoming Matches" {...a11yProps(1)} />
+                  <Tab label="Previous Matches" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
             </Grid>
@@ -340,7 +350,33 @@ function GroupDetail({user}) {
                         primary={match.name}/>
                       <ListItemSecondaryAction>
                         <IconButton edge="end" aria-label="go" onClick={() => {
-                          history.push(`/match-day-detail/${match.id}`)
+                          history.push(`/match-day-detail/${match.id}?isPrevious=false`)
+                        }}>
+                          <NavigateNextIcon/>
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )}
+                </List>
+              </div>}
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              {previousMatches.length !== 0 &&
+              <div className={classes.listRoot}>
+                <List
+                  subheader={<ListSubheader>Matches</ListSubheader>}
+                  component="nav"
+                  aria-label="secondary mailbox folder"
+                >
+                  {previousMatches.map((match, index) =>
+                    <ListItem
+                      key={index}
+                    >
+                      <ListItemText
+                        primary={match.name}/>
+                      <ListItemSecondaryAction>
+                        <IconButton edge="end" aria-label="go" onClick={() => {
+                          history.push(`/match-day-detail/${match.id}?isPrevious=true`)
                         }}>
                           <NavigateNextIcon/>
                         </IconButton>
