@@ -32,6 +32,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton
 } from "react-share";
+import { isAdminUser } from "../../features/member/memberSlice";
 
 const useStyles = makeStyles((theme) => ({
   listRoot: {
@@ -70,6 +71,11 @@ function MatchDayDetail({user}) {
     }
   };
 
+  const checkIsAdmin = React.useCallback(async () => {
+    setLoading(true)
+    await dispatch(isAdminUser({user, groupId}))
+    setLoading(false)
+  }, [user])
 
   const getMatchMembers = React.useCallback(async () => {
     setLoading(true)
@@ -85,6 +91,7 @@ function MatchDayDetail({user}) {
 
 
   React.useEffect(() => {
+    checkIsAdmin();
     isMatchExpired();
     getMatchMembers();
     getMatchDay()
@@ -211,7 +218,7 @@ function MatchDayDetail({user}) {
                       <ListItemSecondaryAction>
                         <ListItemText
                           primary={`${member.rating_point} pts`}
-                          primaryTypographyProps={{style: {color: member?.is_rated ? 'primary' : 'secondary'}}}
+                          primaryTypographyProps={{style: {fontWeight: member?.is_rated ? 'bold' : 'normal'}}}
                         />
                       </ListItemSecondaryAction>
                     </ListItem>
